@@ -2,14 +2,21 @@ const bcrypt = require('bcrypt')
 const { User } = require('../models')
 
 exports.register = async (req, res) => {
-  const { username, password } = req.body
+  const { username, email, password } = req.body
   const hashedPassword = await bcrypt.hash(password, 12)
   const user = new User({
     username,
+    email,
     password: hashedPassword,
   })
-  await user.save()
-  res.send('Successfuly stored the user!')
+  console.log(user)
+  try {
+    await user.save()
+    res.send('Successfuly stored the user!')
+  } catch (err) {
+    console.log(err)
+    res.send(err.message)
+  }
 }
 
 exports.login = async (req, res) => {

@@ -1,7 +1,6 @@
 const express = require('express')
-const mongoose = require('mongoose')
 const dotenv = require('dotenv')
-const { database } = require('./config')
+const config = require('./config')
 
 const app = express()
 
@@ -9,22 +8,18 @@ const app = express()
 dotenv.config()
 const port = process.env.APP_PORT || 8090
 
-// Connecting to MongoDB
-database()
+// Database connection
+config.database(() => {
+  app.listen(port, () => {
+    console.log(`Listening on port:${port}`)
+  })
+})
 
+// Middlewares
 app.use(express.urlencoded({ extended: true }))
 
-app.get('/', (req, res) => {
-  res.send('<h1>You are connected to Consulstation APIs!</h1>')
-})
-
 // Importing routes
+app.get('/', (req, res) => {
+  res.send('You are connected to Consulstation APIs!')
+})
 require('./api/v1/routes')(app)
-
-app.get('*', (req, res) => {
-  res.send('<h1>Invalid enpoint!</h1>')
-})
-
-app.listen(port, () => {
-  console.log(`Listening on port:${port}`)
-})

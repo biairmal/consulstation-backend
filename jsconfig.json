@@ -7,13 +7,14 @@
     "exclude": ["node_modules"],
     "baseUrl": ".",
     "paths": {
-      "@src/*": ["src/*"],
-      "@controllers/*": ["src/api/v1/controllers/*"],
-      "@helpers/*": ["src/api/v1/helpers/*"],
-      "@middlewares/*": ["src/api/v1/middlewares/*"],
-      "@models/*": ["src/api/v1/models/*"],
-      "@routes/*": ["src/api/v1/routes/*"],
-      "@services/*": ["src/api/v1/services/*"],
-      "@validations/*": ["src/api/v1/validations/*"],
+      "@src/*": ["./src/*"],
+      "@config/*": ["./src/config/*"],
+      "@controllers/*": ["./src/api/v1/controllers/*"],
+      "@helpers/*": ["./src/api/v1/helpers/*"],
+      "@middlewares/*": ["./src/api/v1/middlewares/*"],
+      "@models/*": ["./src/api/v1/models/*"],
+      "@routes/*": ["./src/api/v1/routes/*"],
+      "@services/*": ["./src/api/v1/services/*"],
+      "@validations/*": ["./src/api/v1/validations/*"],
     }
   }

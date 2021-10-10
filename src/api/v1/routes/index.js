@@ -1,3 +1,5 @@
+const authRoutes = require('./authRoutes')
+
 module.exports = (app) => {
-    require('./authRoutes')(app)
+  app.use(authRoutes)
 }
