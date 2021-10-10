@@ -1,5 +1,5 @@
 const authRoutes = require('./authRoutes')
 
-module.exports = (app) => {
-  app.use(authRoutes)
-}
+module.exports = [
+  authRoutes
+]

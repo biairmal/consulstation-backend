@@ -1,6 +1,8 @@
 const express = require('express')
+const cookieParser = require('cookie-parser')
 const dotenv = require('dotenv')
 const config = require('./config')
+const routes = require('./api/v1/routes')
 
 const app = express()
 
@@ -17,9 +19,10 @@ config.database(() => {
 
 // Middlewares
 app.use(express.urlencoded({ extended: true }))
+app.use(cookieParser())
 
 // Importing routes
-app.get('/', (req, res) => {
+app.get('/api', (req, res) => {
   res.send('You are connected to Consulstation APIs!')
 })
-require('./api/v1/routes')(app)
+routes.forEach((route) => app.use('/api', route))
