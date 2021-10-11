@@ -1,27 +1,45 @@
-const bcrypt = require('bcrypt')
-const { User } = require('../models')
+const { authServices } = require('../services')
 
 exports.register = async (req, res) => {
   const { username, email, password } = req.body
-  const hashedPassword = await bcrypt.hash(password, 12)
-  const user = new User({
-    username,
-    email,
-    password: hashedPassword,
-  })
-  console.log(user)
+
   try {
-    await user.save()
-    res.send('Successfuly stored the user!')
+    await authServices.register(
+      username,
+      email,
+      password
+    )
+
+    return res.status(201).json({
+      success: true,
+      message: 'User stored successfully!',
+    })
   } catch (err) {
-    console.log(err)
-    res.send(err.message)
+    const errorMessage = authServices.handleErrors(err)
+
+    return res.status(500).json({
+      success: false,
+      message: errorMessage,
+    })
   }
 }
 
 exports.login = async (req, res) => {
   const { username, password } = req.body
-  const user = await User.findOne({ username })
-  const result = await bcrypt.compare(password, user.password)
-  res.send(result)
+
+  try {
+    await authServices.login(username, password)
+
+    res.status(200).json({
+      success: true,
+      message: 'Logged in successfully!',
+    })
+  } catch (err) {
+    console.log(err)
+
+    res.status(500).json({
+      success: false,
+      message: err,
+    })
+  }
 }
