@@ -1,23 +1,26 @@
 const { User } = require('../models')
+const { isEmail } = require('validator')
 const bcrypt = require('bcrypt')
 
 exports.register = async (username, email, password) => {
-  const hashedPassword = await bcrypt.hash(password, 12)
   const user = new User({
     username,
     email,
-    password: hashedPassword,
+    password,
   })
+
   return user.save()
 }
 
 exports.login = async (username, password) => {
-  const user = await User.findOne({ username })
-  const result = await bcrypt.compare(password, user.password)
-  if (!user || !result) {
-    throw 'Incorrect username or password!'
+  const searchParams = isEmail(username) ? { email: username } : { username }
+  const user = await User.findOne(searchParams)
+  if (user) {
+    const result = await bcrypt.compare(password, user.password)
+
+    if (result) return 'Successfully logged in!'
   }
-  return 'Successfully logged in!'
+  throw 'Incorrect username or password!'
 }
 
 exports.handleErrors = (err) => {
@@ -30,6 +33,7 @@ exports.handleErrors = (err) => {
         message: `${key} already exists`,
       })
     })
+
     return errorList
   }
 
@@ -42,6 +46,7 @@ exports.handleErrors = (err) => {
         message: err.errors[key].message,
       })
     })
+
     return errorList
   }
 
