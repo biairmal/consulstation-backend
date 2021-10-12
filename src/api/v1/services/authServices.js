@@ -1,6 +1,20 @@
 const { User } = require('../models')
 const { isEmail } = require('validator')
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+
+exports.generateAccessToken = (id) => {
+  return jwt.sign({ id }, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: '30m',
+  })
+}
+
+exports.generateRefreshToken = (id) => {
+  // i will put refresh token to somewhere else in the server later
+  return jwt.sign({ id }, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: '1d',
+  })
+}
 
 exports.register = async (username, email, password) => {
   const user = new User({
@@ -18,37 +32,28 @@ exports.login = async (username, password) => {
   if (user) {
     const result = await bcrypt.compare(password, user.password)
 
-    if (result) return 'Successfully logged in!'
+    if (result) return user
   }
-  throw 'Incorrect username or password!'
+  console.log(user)
+  throw 'Your credentials are incorrect!'
 }
 
-exports.handleErrors = (err) => {
+exports.handleRegistrationErrors = (err) => {
+  let errorObj = {}
   // handling duplicate keys
   if (err.code === 11000) {
-    let errorList = []
     Object.keys(err.keyPattern).forEach((key) => {
-      errorList.push({
-        key: key,
-        message: `${key} already exists`,
-      })
+      errorObj[key] = `${key} already exists`
     })
-
-    return errorList
+    return errorObj
   }
 
-  //handling validation errors
+  // handling validation errors
   if (err._message === 'User validation failed') {
-    let errorList = []
     Object.keys(err.errors).forEach((key) => {
-      errorList.push({
-        key: key,
-        message: err.errors[key].message,
-      })
+      errorObj[key] = err.errors[key].message
     })
-
-    return errorList
+    return errorObj
   }
-
   return err
 }
