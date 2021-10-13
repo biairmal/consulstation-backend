@@ -51,3 +51,20 @@ exports.login = async (req, res) => {
     })
   }
 }
+
+exports.refreshToken = async (req, res) => {
+  const { refreshToken } = req.body
+  try {
+    const newToken = await authServices.refreshAccessToken(refreshToken)
+
+    console.log(newToken)
+    res.status(201).json({
+      success: true,
+      message: 'Succesfully created new access token!',
+      accessToken: newToken,
+    })
+  } catch (err) {
+    console.log(err)
+    res.sendStatus(err)
+  }
+}

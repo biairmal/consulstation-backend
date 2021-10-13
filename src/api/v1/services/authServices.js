@@ -3,16 +3,35 @@ const { isEmail } = require('validator')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
+let availableRefreshTokens = []
+
 exports.generateAccessToken = (id) => {
   return jwt.sign({ id }, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: '30m',
+    expiresIn: process.env.ACCESS_TOKEN_LIFE,
   })
 }
 
 exports.generateRefreshToken = (id) => {
   // i will put refresh token to somewhere else in the server later
-  return jwt.sign({ id }, process.env.REFRESH_TOKEN_SECRET, {
-    expiresIn: '1d',
+  const refreshToken = jwt.sign({ id }, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: process.env.REFRESH_TOKEN_LIFE,
+  })
+
+  availableRefreshTokens.push(refreshToken)
+
+  return refreshToken
+}
+
+exports.refreshAccessToken = (token) => {
+  if (token == null) throw 401
+  if (!availableRefreshTokens.includes(token)) throw 403
+  jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+    console.log(err)
+    console.log(user)
+    if (err) throw 403
+    const newToken = this.generateAccessToken(user.id)
+    console.log(newToken)
+    return newToken
   })
 }
 

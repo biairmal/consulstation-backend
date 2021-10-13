@@ -1,8 +1,7 @@
 const mongoose = require('mongoose')
-const bcrypt = require('bcrypt')
 const { isEmail } = require('validator')
 
-const userSchema = new mongoose.Schema({
+const adminSchema = new mongoose.Schema({
   username: {
     type: String,
     required: [true, 'Username can not be blank'],
@@ -19,10 +18,7 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    minlength: [8, 'Password can not be less than 6 characters'],
-    maxlength: [24, 'Password can not be more than 24 characters'],
     required: [true, 'Password can not be blank'],
-    select: false,
   },
   firstName : String,
   lastName : String,
@@ -31,10 +27,5 @@ const userSchema = new mongoose.Schema({
   verifiedAt : Date
 })
 
-userSchema.pre('save', async function (next) {
-  const hashedPassword = await bcrypt.hash(this.password, 12)
-  this.password = hashedPassword
-  next()
-})
 
-module.exports = mongoose.model('User', userSchema)
+module.exports = mongoose.model('Admin', adminSchema)

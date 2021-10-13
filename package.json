@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon src/index.js"
+    "start": "nodemon src/index.js",
+    "seed": "node src/api/v1/seeders"
   },
   "keywords": [],
   "author": "Bandana Irmal Abdillah",
@@ -16,6 +17,7 @@
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
+    "mongo-seeding": "^3.7.0",
     "mongoose": "^6.0.6",
     "nodemon": "^2.0.12",
     "validator": "^13.6.0"
