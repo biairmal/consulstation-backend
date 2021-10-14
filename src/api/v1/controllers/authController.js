@@ -31,14 +31,13 @@ exports.login = async (req, res) => {
 
   try {
     const user = await authServices.login(username, password)
-    const accessToken = authServices.generateAccessToken(user._id)
-    const refreshToken = authServices.generateRefreshToken(user._id)
+    const [token, refreshToken] = authServices.createTokens(user._id)
 
     // res.cookie('at', accessToken, { httpOnly: true, maxAge: 15 * 1000 })
     res.status(200).json({
       success: true,
       message: 'Logged in successfully!',
-      accessToken,
+      token,
       refreshToken,
     })
   } catch (err) {
@@ -55,16 +54,16 @@ exports.login = async (req, res) => {
 exports.refreshToken = async (req, res) => {
   const { refreshToken } = req.body
   try {
-    const newToken = await authServices.refreshAccessToken(refreshToken)
+    const [newToken, newRefreshToken] = await authServices.refreshAccessToken(refreshToken)
 
-    console.log(newToken)
     res.status(201).json({
       success: true,
       message: 'Succesfully created new access token!',
       accessToken: newToken,
+      refreshToken: newRefreshToken,
     })
   } catch (err) {
-    console.log(err)
+    console.log('error:', err)
     res.sendStatus(err)
   }
 }

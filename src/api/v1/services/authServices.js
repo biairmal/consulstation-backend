@@ -5,34 +5,28 @@ const jwt = require('jsonwebtoken')
 
 let availableRefreshTokens = []
 
-exports.generateAccessToken = (id) => {
-  return jwt.sign({ id }, process.env.ACCESS_TOKEN_SECRET, {
+exports.createTokens = (id) => {
+  const token = jwt.sign({ id }, process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: process.env.ACCESS_TOKEN_LIFE,
   })
-}
-
-exports.generateRefreshToken = (id) => {
-  // i will put refresh token to somewhere else in the server later
   const refreshToken = jwt.sign({ id }, process.env.REFRESH_TOKEN_SECRET, {
     expiresIn: process.env.REFRESH_TOKEN_LIFE,
   })
-
+  
   availableRefreshTokens.push(refreshToken)
-
-  return refreshToken
+  
+  return [token, refreshToken]
 }
 
 exports.refreshAccessToken = (token) => {
+  let id = null
   if (token == null) throw 401
   if (!availableRefreshTokens.includes(token)) throw 403
   jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-    console.log(err)
-    console.log(user)
     if (err) throw 403
-    const newToken = this.generateAccessToken(user.id)
-    console.log(newToken)
-    return newToken
+    id = user.id
   })
+  return this.createTokens(id)
 }
 
 exports.register = async (username, email, password) => {
