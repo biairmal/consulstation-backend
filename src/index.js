@@ -27,6 +27,7 @@ const corsOptions = {
 // Middlewares
 app.use(cors(corsOptions))
 app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
 app.use(cookieParser())
 
 // Importing routes
