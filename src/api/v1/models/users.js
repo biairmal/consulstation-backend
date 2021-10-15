@@ -23,11 +23,17 @@ const userSchema = new mongoose.Schema({
     maxlength: [24, 'Password can not be more than 24 characters'],
     required: [true, 'Password can not be blank'],
   },
-  firstName : String,
-  lastName : String,
-  phone : String,
-  profilePicture : String,
-  verifiedAt : Date
+  firstName: {
+    type: String,
+    required: [true, 'First name can not be blank'],
+  },
+  lastName: {
+    type: String,
+    required: [true, 'Last name can not be blank'],
+  },
+  phone: String,
+  profilePicture: String,
+  verifiedAt: Date,
 })
 
 userSchema.pre('save', async function (next) {

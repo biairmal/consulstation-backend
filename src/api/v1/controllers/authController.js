@@ -1,21 +1,17 @@
 const { authServices } = require('../services')
 
 exports.register = async (req, res) => {
-  const { username, email, password } = req.body
+  const { username, email, password, firstName, lastName } = req.body
 
   try {
-    const user = await authServices.register(username, email, password)
-    const accessToken = authServices.generateAccessToken(user._id)
-    const refreshToken = authServices.generateRefreshToken(user._id)
+    await authServices.register(username, email, password, firstName, lastName)
 
     return res.status(201).json({
       success: true,
       message: 'User stored successfully!',
-      accessToken,
-      refreshToken,
     })
   } catch (err) {
-    console.log(err)
+    console.log('Errors: ', err)
     const errorMessage = authServices.handleRegistrationErrors(err)
 
     return res.status(500).json({
@@ -32,8 +28,17 @@ exports.login = async (req, res) => {
   try {
     const user = await authServices.login(username, password)
     const [token, refreshToken] = authServices.createTokens(user._id)
+    await authServices.saveRefreshToken(refreshToken)
 
-    // res.cookie('at', accessToken, { httpOnly: true, maxAge: 15 * 1000 })
+    res.cookie('token', token, {
+      httpOnly: true,
+      maxAge: process.env.ACCESS_TOKEN_LIFE,
+    })
+    res.cookie('refreshToken', token, {
+      httpOnly: true,
+      maxAge: process.env.REFRESH_TOKEN_LIFE,
+    })
+
     res.status(200).json({
       success: true,
       message: 'Logged in successfully!',
@@ -41,7 +46,7 @@ exports.login = async (req, res) => {
       refreshToken,
     })
   } catch (err) {
-    console.log(err)
+    console.log('Errors: ', err)
 
     res.status(500).json({
       success: false,
@@ -54,7 +59,10 @@ exports.login = async (req, res) => {
 exports.refreshToken = async (req, res) => {
   const { refreshToken } = req.body
   try {
-    const [newToken, newRefreshToken] = await authServices.refreshAccessToken(refreshToken)
+    const [newToken, newRefreshToken] = await authServices.refreshAccessToken(
+      refreshToken
+    )
+    await authServices.saveRefreshToken(refreshToken)
 
     res.status(201).json({
       success: true,
@@ -63,7 +71,7 @@ exports.refreshToken = async (req, res) => {
       refreshToken: newRefreshToken,
     })
   } catch (err) {
-    console.log('error:', err)
+    console.log('Errors: ', err)
     res.sendStatus(err)
   }
 }
