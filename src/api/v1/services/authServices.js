@@ -1,4 +1,4 @@
-const { User, RefreshToken } = require('../models')
+const { User, RefreshToken, Consultant } = require('../models')
 const { isEmail } = require('validator')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
@@ -61,6 +61,15 @@ exports.login = async (username, password) => {
     const result = await bcrypt.compare(password, user.password)
 
     if (result) return user
+  }
+  const consultant = await Consultant.findOne(searchParams)
+  console.log(consultant)
+
+  if (consultant) {
+    // const result = await bcrypt.compare(password, consultant.password)
+    result = (password === consultant.password)
+
+    if (result) return consultant
   }
 
   throw 'Your credentials are incorrect!'
