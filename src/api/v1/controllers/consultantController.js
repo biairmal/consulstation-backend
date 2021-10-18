@@ -5,12 +5,19 @@ const queryConfig = { password: 0 }
 exports.getConsultants = async (req, res) => {
   const consultants = await Consultant.find({}, queryConfig)
 
-  res.json(consultants)
+  res.json({
+    success: true,
+    message: 'Successfully retreived partnerships requests!',
+    data: consultants,
+  })
 }
 
 exports.getConsultantProfile = async (req, res) => {
   const consultantId = req.user.id
-  const consultant = await Consultant.findOne({ _id: consultantId }, queryConfig)
+  const consultant = await Consultant.findOne(
+    { _id: consultantId },
+    queryConfig
+  )
 
   res.status(200).json({
     success: true,

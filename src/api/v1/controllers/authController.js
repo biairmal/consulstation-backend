@@ -39,7 +39,15 @@ exports.login = async (req, res) => {
       maxAge: process.env.REFRESH_TOKEN_LIFE,
     })
 
-    res.status(200).json({
+    if(!user) {
+      return res.status(200).json({
+        success: false,
+        message: 'Failed to login!',
+        errors: 'Invalid credentials!'
+      })
+    }
+
+    return res.status(200).json({
       success: true,
       message: 'Logged in successfully!',
       token,
@@ -48,7 +56,49 @@ exports.login = async (req, res) => {
   } catch (err) {
     console.log('Errors: ', err)
 
-    res.status(500).json({
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to login!',
+      errors: err,
+    })
+  }
+}
+
+exports.loginAdmin = async () => {
+  const { username, password } = req.body
+
+  try {
+    const admin = await authServices.loginAdmin(username, password)
+    const [token, refreshToken] = authServices.createTokens(admin._id)
+    await authServices.saveRefreshToken(refreshToken)
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      maxAge: process.env.ACCESS_TOKEN_LIFE,
+    })
+    res.cookie('refreshToken', token, {
+      httpOnly: true,
+      maxAge: process.env.REFRESH_TOKEN_LIFE,
+    })
+
+    if(!admin) {
+      return res.status(200).json({
+        success: false,
+        message: 'Failed to login!',
+        errors: 'Invalid credentials!'
+      })
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Logged in successfully!',
+      token,
+      refreshToken,
+    })
+  } catch (err) {
+    console.log('Errors: ', err)
+
+    return res.status(500).json({
       success: false,
       message: 'Failed to login!',
       errors: err,

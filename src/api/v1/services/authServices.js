@@ -1,4 +1,4 @@
-const { User, RefreshToken, Consultant } = require('../models')
+const { User, RefreshToken, Consultant, Admin } = require('../models')
 const { isEmail } = require('validator')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
@@ -56,23 +56,38 @@ exports.register = async (username, email, password, firstName, lastName) => {
 
 exports.login = async (username, password) => {
   const searchParams = isEmail(username) ? { email: username } : { username }
-  const user = await User.findOne(searchParams)
-  if (user) {
-    const result = await bcrypt.compare(password, user.password)
+  try {
+    const user = await User.findOne(searchParams)
+    if (user) {
+      const result = await bcrypt.compare(password, user.password)
+      if (result) return user
+    }
 
-    if (result) return user
+    const consultant = await Consultant.findOne(searchParams)
+    if (consultant) {
+      const result = await bcrypt.compare(password, consultant.password)
+      if (result) return consultant
+    }
+    
+    return null
+  } catch (err) {
+    throw err
   }
-  const consultant = await Consultant.findOne(searchParams)
-  console.log(consultant)
+}
 
-  if (consultant) {
-    // const result = await bcrypt.compare(password, consultant.password)
-    result = (password === consultant.password)
+exports.loginAdmin = async (username, password) => {
+  const searchParams = isEmail(username) ? { email: username } : { username }
+  try {
+    const admin = await Admin.findOne(searchParams)
+    if (admin) {
+      const result = await bcrypt.compare(password, user.password)
+      if (result) return admin
+    }
 
-    if (result) return consultant
+    return null
+  } catch (err) {
+    throw err
   }
-
-  throw 'Your credentials are incorrect!'
 }
 
 exports.handleRegistrationErrors = (err) => {

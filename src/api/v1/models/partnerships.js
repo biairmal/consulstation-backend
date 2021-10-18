@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const { isEmail } = require('validator')
 
-const consultantSchema = new mongoose.Schema({
+const partnershipSchema = new mongoose.Schema({
   username: {
     type: String,
     required: [true, 'Username can not be blank'],
@@ -26,13 +26,9 @@ const consultantSchema = new mongoose.Schema({
   npwp : String,
   cv: String,
   startingYear : Number,
-  totalIncome : Number,
-  uncollectedIncome : Number,
-  contracts : Array,
-  availability : Boolean,
   profilePicture : String,
-  verifiedAt : Date
-})
+  accepted: Boolean,
+}, { timestamps: { createdAt: 'created_at' } })
 
 
-module.exports = mongoose.model('Consultant', consultantSchema)
+module.exports = mongoose.model('Partnership', partnershipSchema)
