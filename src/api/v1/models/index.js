@@ -1,5 +1,6 @@
-exports.User = require('./users')
 exports.Admin = require('./admins')
-exports.Partnership = require('./partnerships')
+exports.Article = require('./articles')
 exports.Consultant = require('./consultants')
+exports.Partnership = require('./partnerships')
 exports.RefreshToken = require('./refreshToken')
+exports.User = require('./users')

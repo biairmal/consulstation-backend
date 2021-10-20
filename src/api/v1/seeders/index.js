@@ -6,11 +6,13 @@ dotenv.config()
 
 const config = {
   database: `mongodb://localhost:${process.env.DB_PORT}/${process.env.DB_NAME}`,
-  dropDatabase: false,
+  dropDatabase: true,
 }
 
 const seeder = new Seeder(config)
-const collections = seeder.readCollectionsFromPath(path.resolve(__dirname, './data'))
+const collections = seeder.readCollectionsFromPath(
+  path.resolve(__dirname, './data')
+)
 
 seeder
   .import(collections)

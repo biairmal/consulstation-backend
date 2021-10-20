@@ -20,10 +20,22 @@ const adminSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Password can not be blank'],
   },
-  firstName : String,
-  lastName : String,
-  phone : String,
-  profilePicture : String,
+  firstName: {
+    type: String,
+    required: [true, 'First name can not be blank'],
+  },
+  lastName: {
+    type: String,
+    required: [true, 'Last name can not be blank'],
+  },
+  phone: {
+    type: String,
+    required: [true, 'Phone can not be blank'],
+  },
+  profilePicture: {
+    type: String,
+    default: 'default.jpg',
+  },
   verifiedAt : Date
 })
 

@@ -31,8 +31,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Last name can not be blank'],
   },
-  phone: String,
-  profilePicture: String,
+  phone: {
+    type: String,
+    default: null,
+  },
+  profilePicture: {
+    type: String,
+    default: 'default.jpg',
+  },
   verifiedAt: Date,
 })
 

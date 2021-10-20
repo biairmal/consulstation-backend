@@ -36,10 +36,28 @@ exports.refreshAccessToken = async (token) => {
   }
 }
 
-exports.saveRefreshToken = async (token) => {
-  const refreshToken = new RefreshToken({ refreshToken: token })
+exports.saveRefreshToken = async (token, userId, role) => {
+  const refreshToken = new RefreshToken({
+    refreshToken: token,
+    userId: userId,
+    role: role,
+  })
 
   return refreshToken.save()
+}
+
+exports.deleteRefreshToken = async (token) => {
+  let result = null
+  try {
+    await RefreshToken.findOneAndDelete({ refreshToken: token }).then(
+      (data) => {
+        result = data
+      }
+    )
+    return result
+  } catch (err) {
+    throw err
+  }
 }
 
 exports.register = async (username, email, password, firstName, lastName) => {
@@ -68,7 +86,7 @@ exports.login = async (username, password) => {
       const result = await bcrypt.compare(password, consultant.password)
       if (result) return consultant
     }
-    
+
     return null
   } catch (err) {
     throw err
@@ -88,27 +106,4 @@ exports.loginAdmin = async (username, password) => {
   } catch (err) {
     throw err
   }
-}
-
-exports.handleRegistrationErrors = (err) => {
-  let errorObj = {}
-  // handling duplicate keys
-  if (err.code === 11000) {
-    Object.keys(err.keyPattern).forEach((key) => {
-      errorObj[key] = `${key} already exists`
-    })
-
-    return errorObj
-  }
-
-  // handling validation errors
-  if (err._message === 'User validation failed') {
-    Object.keys(err.errors).forEach((key) => {
-      errorObj[key] = err.errors[key].message
-    })
-
-    return errorObj
-  }
-
-  return err
 }

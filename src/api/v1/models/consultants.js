@@ -20,17 +20,47 @@ const consultantSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Password can not be blank'],
   },
-  firstName : String,
-  lastName : String,
-  phone : String,
-  npwp : String,
-  cv: String,
-  startingYear : Number,
-  totalIncome : Number,
-  uncollectedIncome : Number,
+  firstName: {
+    type: String,
+    required: [true, 'First name can not be blank'],
+  },
+  lastName: {
+    type: String,
+    required: [true, 'Last name can not be blank'],
+  },
+  phone: {
+    type: String,
+    required: [true, 'Phone can not be blank'],
+  },
+  npwp: {
+    type: String,
+    required: [true, 'NPWP can not be blank'],
+  },
+  cv: {
+    type: String,
+    required: [true, 'CV can not be blank'],
+  },
+  startingYear: {
+    type: Number,
+    required: [true, 'Starting year can not be blank'],
+  },
+  totalIncome : {
+    type: Number,
+    default: 0
+  },
+  uncollectedIncome : {
+    type: Number,
+    default: 0
+  },
   contracts : Array,
-  availability : Boolean,
-  profilePicture : String,
+  availability : {
+    type: Boolean,
+    default: false
+  },
+  profilePicture : {
+    type: String,
+    required: [true, 'Profile picture can not be blank']
+  },
   verifiedAt : Date
 })
 
