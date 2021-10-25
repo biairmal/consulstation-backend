@@ -2,6 +2,10 @@ const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const { isEmail } = require('validator')
 
+const defaultAvatarFilename = 'default-avatar'
+const defaultAvatarUrl =
+  'https://thumbs.dreamstime.com/b/default-avatar-profile-icon-social-media-user-vector-image-icon-default-avatar-profile-icon-social-media-user-vector-image-209162840.jpg'
+
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -36,8 +40,14 @@ const userSchema = new mongoose.Schema({
     default: null,
   },
   profilePicture: {
-    type: String,
-    default: 'default.jpg',
+    filename: {
+      type: String,
+      default: defaultAvatarFilename,
+    },
+    url: {
+      type: String,
+      default: defaultAvatarUrl,
+    },
   },
   verifiedAt: Date,
 })
