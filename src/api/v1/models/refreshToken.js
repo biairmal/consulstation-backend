@@ -12,8 +12,8 @@ const refreshTokenSchema = new mongoose.Schema({
   role: {
     type: String,
     required: true,
-    default:'user'
-  }
+    default: 'user',
+  },
 })
 
 module.exports = mongoose.model('RefreshToken', refreshTokenSchema)

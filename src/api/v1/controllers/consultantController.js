@@ -43,7 +43,9 @@ exports.getPublicConsultantProfile = async (req, res) => {
 exports.updateProfile = async (req, res) => {
   const consultantId = req.user.id
   const data = req.body
-  const result = await Consultant.updateOne({ _id: consultantId }, data)
+  const result = await Consultant.updateOne({ _id: consultantId }, data, {
+    runValidators: true,
+  })
 
   res.status(201).json({
     success: true,

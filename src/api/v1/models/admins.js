@@ -36,8 +36,7 @@ const adminSchema = new mongoose.Schema({
     type: String,
     default: 'default.jpg',
   },
-  verifiedAt : Date
+  verifiedAt: Date,
 })
-
 
 module.exports = mongoose.model('Admin', adminSchema)

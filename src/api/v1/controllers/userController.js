@@ -20,7 +20,9 @@ exports.getProfile = async (req, res) => {
 exports.updateProfile = async (req, res) => {
   const userId = req.user.id
   const data = req.body
-  const result = await User.updateOne({ _id: userId }, data)
+  const result = await User.updateOne({ _id: userId }, data, {
+    runValidators: true,
+  })
   res.status(201).json({
     success: true,
     message: 'Successfully updated user!',

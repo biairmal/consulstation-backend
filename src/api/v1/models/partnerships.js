@@ -56,7 +56,7 @@ const partnershipSchema = new mongoose.Schema(
     },
     accepted: {
       type: Boolean,
-      default: false
+      default: false,
     },
   },
   { timestamps: true }

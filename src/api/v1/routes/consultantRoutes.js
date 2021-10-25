@@ -4,7 +4,7 @@ const { verifyToken } = require('../middlewares')
 
 const router = Router()
 
-router.get('/consultants',  consultantController.getConsultants)
+router.get('/consultants', consultantController.getConsultants)
 router.get(
   '/consultant/profile',
   verifyToken,
@@ -14,7 +14,7 @@ router.get(
   '/consultant/:consultantId',
   consultantController.getPublicConsultantProfile
 )
-router.post(
+router.patch(
   '/consultant/profile/update',
   verifyToken,
   consultantController.updateProfile

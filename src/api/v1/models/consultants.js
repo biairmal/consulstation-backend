@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const Schema = mongoose.Schema
 const { isEmail } = require('validator')
 
 const consultantSchema = new mongoose.Schema({
@@ -44,25 +45,29 @@ const consultantSchema = new mongoose.Schema({
     type: Number,
     required: [true, 'Starting year can not be blank'],
   },
-  totalIncome : {
+  totalIncome: {
     type: Number,
-    default: 0
+    default: 0,
   },
-  uncollectedIncome : {
+  uncollectedIncome: {
     type: Number,
-    default: 0
+    default: 0,
   },
-  contracts : Array,
-  availability : {
+  contracts: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'ContractPlan',
+    },
+  ],
+  availability: {
     type: Boolean,
-    default: false
+    default: false,
   },
-  profilePicture : {
+  profilePicture: {
     type: String,
-    required: [true, 'Profile picture can not be blank']
+    required: [true, 'Profile picture can not be blank'],
   },
-  verifiedAt : Date
+  verifiedAt: Date,
 })
-
 
 module.exports = mongoose.model('Consultant', consultantSchema)
