@@ -87,7 +87,7 @@ exports.login = async (username, password) => {
     const consultant = await Consultant.findOne(searchParams)
     if (consultant) {
       const result = await bcrypt.compare(password, consultant.password)
-      user.role = 'consultant'
+      consultant.role = 'consultant'
       if (result) return consultant
     }
 

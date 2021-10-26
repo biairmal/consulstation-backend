@@ -1,3 +1,5 @@
 exports.articleServices = require('./articleServices')
 exports.authServices = require('./authServices')
+exports.consultantServices = require('./consultantServices')
 exports.partnershipServices = require('./partnershipServices')
+exports.userServices = require('./userServices')

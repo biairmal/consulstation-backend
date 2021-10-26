@@ -1,6 +1,10 @@
 const { consultantController } = require('../controllers')
 const { Router } = require('express')
 const { verifyToken } = require('../middlewares')
+const { getStorage } = require('../../../config/cloudinary')
+const multer = require('multer')
+const storage = getStorage('avatar')
+const upload = multer({ storage })
 
 const router = Router()
 
@@ -18,6 +22,17 @@ router.patch(
   '/consultant/profile/update',
   verifyToken,
   consultantController.updateProfile
+)
+router.post(
+  '/consultant/avatar',
+  verifyToken,
+  upload.single('profilePicture'),
+  consultantController.updateAvatar
+)
+router.delete(
+  '/consultant/avatar',
+  verifyToken,
+  consultantController.deleteAvatar
 )
 
 module.exports = router

@@ -8,7 +8,7 @@ const upload = multer({ storage })
 
 const router = Router()
 
-router.get('/users', verifyToken, userController.getUser)
+router.get('/users', verifyToken, userController.getUsers)
 router.get('/user/profile', verifyToken, userController.getProfile)
 router.post('/user/profile/update', verifyToken, userController.updateProfile)
 router.post(

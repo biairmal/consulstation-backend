@@ -1,97 +1,114 @@
-const { cloudinary } = require('../../../config/cloudinary')
-const { User } = require('../models')
+const { userServices } = require('../services')
 
-exports.getUser = async (req, res) => {
-  const user = await User.find()
+exports.getUsers = async (req, res) => {
+  const { role } = req.user
+  try {
+    if (role !== 'admin') return res.sendStatus(403)
+    
+    const data = await userServices.getUsers()
 
-  res.json(user)
+    return res.status(200).json({
+      success: true,
+      message: 'Successfully retreived users!',
+      data,
+    })
+  } catch (err) {
+    console.log(err)
+
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to retreive users!',
+      errors: err,
+    })
+  }
 }
 
 exports.getProfile = async (req, res) => {
   const userId = req.user.id
-  const user = await User.findOne({ _id: userId })
 
-  return res.status(200).json({
-    success: true,
-    message: 'Successfuly retreived user information!',
-    data: user,
-  })
+  try {
+    const user = await userServices.getUserById(userId)
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid user id!',
+      })
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Successfully retreived user information!',
+      data: user,
+    })
+  } catch (err) {
+    console.log(err)
+
+    return res.status(500).json({
+      succcess: false,
+      message: 'Failed to retreive user information!',
+      errors: err,
+    })
+  }
 }
 
 exports.updateProfile = async (req, res) => {
   const userId = req.user.id
   const data = req.body
-  const result = await User.updateOne({ _id: userId }, data, {
-    runValidators: true,
-  })
-  return res.status(201).json({
-    success: true,
-    message: 'Successfully updated user!',
-    data: result,
-  })
+
+  try {
+    const result = await userServices.updateUserById(userId, data)
+
+    return res.status(200).json({
+      succcess: true,
+      message: 'Successfully updated user profile!',
+      data: result,
+    })
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to update user profile',
+      errors: err,
+    })
+  }
 }
 
 exports.updateAvatar = async (req, res) => {
   const userId = req.user.id
   const { path, filename } = req.file
 
-  const profilePicture = {
+  const picture = {
     filename: filename,
     url: path,
   }
 
   try {
-    const user = await User.findOne({ _id: userId })
-
-    if (!user) {
-      throw 'User not found'
-    }
-
-    if (user.profilePicture.filename !== 'default-avatar') {
-      await cloudinary.uploader.destroy(user.profilePicture.filename)
-    }
-
-    const result = await User.updateOne({ _id: userId }, { profilePicture })
-
-    if (!result.modifiedCount) throw 'Error on update'
+    const result = await userServices.updateAvatar(userId, picture)
 
     return res.status(200).json({
       success: true,
       message: 'Successfully updated avatar!',
+      data: result,
     })
   } catch (err) {
     return res.status(500).json({
       success: false,
       message: 'Failed to update user avatar!',
-      error: err,
+      errors: err,
     })
   }
 }
 
 exports.deleteAvatar = async (req, res) => {
   const userId = req.user.id
-  const defaultAvatarFilename = 'default-avatar'
-  const defaultAvatarUrl =
-    'https://thumbs.dreamstime.com/b/default-avatar-profile-icon-social-media-user-vector-image-icon-default-avatar-profile-icon-social-media-user-vector-image-209162840.jpg'
 
   try {
-    const user = await User.findOne({ _id: userId })
-
-    if (!user) {
-      throw 'User not found'
-    }
-
-    const cloudinaryFilename = user.profilePicture.filename
-    const profilePicture = {
-      filename: defaultAvatarFilename,
-      url: defaultAvatarUrl,
-    }
-    await User.updateOne({ _id: userId }, { profilePicture })
-    await cloudinary.uploader.destroy(cloudinaryFilename)
+    const result = await userServices.deleteAvatar(userId)
 
     return res.status(200).json({
       success: true,
       message: 'Successfully deleted avatar!',
+      data: result,
     })
   } catch (err) {
     return res.status(500).json({

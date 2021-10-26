@@ -4,7 +4,7 @@ const { partnershipServices } = require('../services')
 exports.getPartnershipRequests = async (req, res) => {
   const { role } = req.user
   try {
-    if (role !== 'admin') return res.send(403)
+    if (role !== 'admin') return res.sendStatus(403)
 
     const data = await partnershipServices.getPartnerships()
 
@@ -30,7 +30,7 @@ exports.createPartnershipRequests = async (req, res) => {
   const cv = req.file
 
   try {
-    if (role !== 'user') return res.send(403)
+    if (role !== 'user') return res.sendStatus(403)
 
     const result = await partnershipServices.createPartnership(id, form, cv)
 
@@ -59,7 +59,7 @@ exports.acceptPartnershipRequest = async (req, res) => {
   const { role } = req.user
 
   try {
-    if (role !== 'admin') return res.send(403)
+    if (role !== 'admin') return res.sendStatus(403)
 
     const result = await partnershipServices.acceptPartnership(id)
 
