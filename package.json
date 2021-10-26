@@ -5,8 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon src/index.js",
-    "seed": "node src/api/v1/seeders"
+    "start": "nodemon src/index.js"
   },
   "keywords": [],
   "author": "Bandana Irmal Abdillah",
@@ -19,8 +18,8 @@
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
-    "mongo-seeding": "^3.7.0",
     "mongoose": "^6.0.6",
+    "mongoose-data-seed": "^2.1.6",
     "multer": "^1.4.3",
     "multer-storage-cloudinary": "^4.0.0",
     "nodemon": "^2.0.12",
@@ -41,5 +40,8 @@
   "bugs": {
     "url": "https://github.com/biairmal/consulstation-backend/issues"
   },
-  "homepage": "https://github.com/biairmal/consulstation-backend#readme"
+  "homepage": "https://github.com/biairmal/consulstation-backend#readme",
+  "mdSeed": {
+    "seedersFolder": "./src/api/v1/seeders"
+  }
 }

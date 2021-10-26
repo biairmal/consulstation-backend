@@ -2,6 +2,10 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const { isEmail } = require('validator')
 
+const defaultAvatarFilename = 'default-avatar'
+const defaultAvatarUrl =
+  'https://thumbs.dreamstime.com/b/default-avatar-profile-icon-social-media-user-vector-image-icon-default-avatar-profile-icon-social-media-user-vector-image-209162840.jpg'
+
 const consultantSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -64,8 +68,14 @@ const consultantSchema = new mongoose.Schema({
     default: false,
   },
   profilePicture: {
-    type: String,
-    required: [true, 'Profile picture can not be blank'],
+    filename: {
+      type: String,
+      default: defaultAvatarFilename,
+    },
+    url: {
+      type: String,
+      default: defaultAvatarUrl,
+    },
   },
   verifiedAt: Date,
 })
