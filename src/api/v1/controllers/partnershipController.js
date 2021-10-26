@@ -1,8 +1,11 @@
-const validationErrorHandler = require('../helpers/validationErrorHandler')
+const { validationErrorHandler } = require('../helpers')
 const { partnershipServices } = require('../services')
 
 exports.getPartnershipRequests = async (req, res) => {
+  const { role } = req.user
   try {
+    if (role !== 'admin') return res.send(403)
+
     const data = await partnershipServices.getPartnerships()
 
     return res.status(200).json({
@@ -23,10 +26,13 @@ exports.getPartnershipRequests = async (req, res) => {
 
 exports.createPartnershipRequests = async (req, res) => {
   const form = req.body
-  const user = req.user
+  const { id, role } = req.user
+  const cv = req.file
 
   try {
-    const result = await partnershipServices.createPartnership(form, user)
+    if (role !== 'user') return res.send(403)
+
+    const result = await partnershipServices.createPartnership(id, form, cv)
 
     if (result) {
       res.status(201).json({
@@ -35,10 +41,12 @@ exports.createPartnershipRequests = async (req, res) => {
       })
     }
   } catch (err) {
-    // console.log(err)
-    const errorMessage = validationErrorHandler(err)
+    console.log(err)
 
-    return res.status(500).json({
+    const errorMessage = validationErrorHandler(err)
+    const statusCode = typeof errorMessage === 'object' ? 400 : 500
+
+    return res.status(statusCode).json({
       success: false,
       message: 'Failed to create partnership requests!',
       errors: errorMessage,
@@ -48,9 +56,12 @@ exports.createPartnershipRequests = async (req, res) => {
 
 exports.acceptPartnershipRequest = async (req, res) => {
   const { id } = req.params
+  const { role } = req.user
 
   try {
-    const result = partnershipServices.acceptPartnership(id)
+    if (role !== 'admin') return res.send(403)
+
+    const result = await partnershipServices.acceptPartnership(id)
 
     if (result) {
       return res.status(200).json({
@@ -66,12 +77,14 @@ exports.acceptPartnershipRequest = async (req, res) => {
       errors: 'Invalid partnership id!',
     })
   } catch (err) {
-    console.log(err)
+    const errorMessage = validationErrorHandler(err)
+    console.log('Errors: ', errorMessage)
+    const statusCode = typeof errorMessage === 'object' ? 400 : 500
 
-    return res.status(500).json({
+    return res.status(statusCode).json({
       success: false,
       message: 'Failed to accept a partnership request!',
-      errors: err,
+      errors: errorMessage,
     })
   }
 }

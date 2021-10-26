@@ -39,8 +39,14 @@ const partnershipSchema = new mongoose.Schema(
       required: [true, 'NPWP can not be blank'],
     },
     cv: {
-      type: String,
-      required: [true, 'CV can not be blank'],
+      filename: {
+        type: String,
+        required: [true, 'CV filename can not be blank'],
+      },
+      url: {
+        type: String,
+        required: [true, 'CV url can not be blank'],
+      },
     },
     startingYear: {
       type: Number,

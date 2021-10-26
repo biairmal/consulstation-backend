@@ -1,7 +1,10 @@
 const { partnershipController } = require('../controllers')
 const { Router } = require('express')
 const { verifyToken } = require('../middlewares')
-
+const { getStorage } = require('../../../config/cloudinary')
+const multer = require('multer')
+const storage = getStorage('cv')
+const upload = multer({ storage })
 const router = Router()
 
 router.get(
@@ -12,6 +15,7 @@ router.get(
 router.post(
   '/partnership',
   verifyToken,
+  upload.single('cv'),
   partnershipController.createPartnershipRequests
 )
 

@@ -1,4 +1,4 @@
-const { Partnership, User } = require('../models')
+const { Partnership, User, Consultant } = require('../models')
 
 const queryConfig = { password: 0 }
 
@@ -6,8 +6,8 @@ exports.getPartnerships = () => {
   return Partnership.find({}, queryConfig)
 }
 
-exports.createPartnership = async (form, user) => {
-  const userData = await User.findOne({ _id: user.id })
+exports.createPartnership = async (userId, form, cv) => {
+  const userData = await User.findOne({ _id: userId })
 
   const partnership = new Partnership({
     username: userData.username,
@@ -19,7 +19,10 @@ exports.createPartnership = async (form, user) => {
     profilePicture: userData.profilePicture,
     createdBy: userData._id,
     npwp: form.npwp,
-    cv: form.cv,
+    cv: {
+      filename: cv.filename,
+      url: cv.path,
+    },
     startingYear: form.startingYear,
   })
 
@@ -30,11 +33,25 @@ exports.acceptPartnership = async (id) => {
   try {
     const partnership = await Partnership.findOne({ _id: id })
 
-    if (partnership) {
-      partnership.accepted = true
-      return partnership.save()
-    }
-    return null
+    if (!partnership) return null
+
+    partnership.accepted = true
+    await partnership.save()
+
+    const consultant = new Consultant({
+      username: partnership.username,
+      email: partnership.email,
+      password: partnership.password,
+      firstName: partnership.firstName,
+      lastName: partnership.lastName,
+      phone: partnership.phone,
+      npwp: partnership.npwp,
+      startingYear: partnership.startingYear,
+      profilePicture: partnership.profilePicture,
+      cv: partnership.cv,
+    })
+
+    return consultant.save()
   } catch (err) {
     throw err
   }

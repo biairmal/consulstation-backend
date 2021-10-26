@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
 const { isEmail } = require('validator')
 
 const defaultAvatarFilename = 'default-avatar'
@@ -47,6 +48,12 @@ const adminSchema = new mongoose.Schema({
     },
   },
   verifiedAt: Date,
+})
+
+adminSchema.pre('save', async function (next) {
+  const hashedPassword = await bcrypt.hash(this.password, 12)
+  this.password = hashedPassword
+  next()
 })
 
 module.exports = mongoose.model('Admin', adminSchema)

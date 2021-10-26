@@ -1,1 +1,1 @@
-exports.valdiationErrorHandler = require('./validationErrorHandler')
+exports.validationErrorHandler = require('./validationErrorHandler')
