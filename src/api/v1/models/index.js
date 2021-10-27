@@ -1,6 +1,8 @@
 exports.Admin = require('./admins')
 exports.Article = require('./articles')
 exports.Consultant = require('./consultants')
+exports.ChatRoom = require('./chatRooms')
+exports.ChatMessage = require('./chatMessages')
 exports.ContractPlan = require('./contractPlans')
 exports.Partnership = require('./partnerships')
 exports.RefreshToken = require('./refreshToken')

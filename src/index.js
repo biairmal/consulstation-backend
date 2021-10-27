@@ -4,6 +4,9 @@ const dotenv = require('dotenv')
 const config = require('./config')
 const routes = require('./api/v1/routes')
 const cors = require('cors')
+const socketio = require('socket.io')()
+const WebSocket = require('./api/v1/utils/WebSocket')
+const http = require('http')
 
 const app = express()
 
@@ -11,13 +14,7 @@ const app = express()
 dotenv.config()
 const port = process.env.APP_PORT || 8090
 
-// Database connection
-config.database(() => {
-  app.listen(port, () => {
-    console.log(`Listening on port:${port}`)
-  })
-})
-
+// Setting up cors policy
 const corsOptions = {
   origin: '*',
   credentials: true, //access-control-allow-credentials:true
@@ -35,3 +32,26 @@ app.get('/api', (req, res) => {
   res.send('You are connected to Consulstation APIs!')
 })
 routes.forEach((route) => app.use('/api', route))
+app.use('*', (req, res) => {
+  return res.status(404).json({
+    success: false,
+    message: 'Invalid API endpoint!'
+  })
+})
+
+// Create HTTP server
+const server = http.createServer(app)
+
+// Create socket connection
+global.io = socketio.listen(server)
+global.io.on('connection', WebSocket.connection)
+
+// Database connection
+config.database(() => {
+  // Listen on provided port
+  server.listen(port)
+  // Event listener for HTTP server
+  server.on('listening', () => {
+    console.log(`Listening on port: ${port}`)
+  })
+})
