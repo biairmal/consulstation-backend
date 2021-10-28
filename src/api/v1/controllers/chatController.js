@@ -100,3 +100,35 @@ exports.getConversationsByChatRoomId = async (req, res) => {
     })
   }
 }
+
+exports.markAsReadByChatRoomId = async (req, res) => {
+  const userId = req.user.id
+  const { chatRoomId } = req.params
+  try {
+    const data = await chatServices.markChatAsReadByChatRoomId(
+      chatRoomId,
+      userId
+    )
+
+    if (!data)
+      return res.status(400).json({
+        success: false,
+        message: 'Failed to mark chat as read!',
+        errors: 'Couldnt find chat room with this id',
+      })
+
+    return res.status(200).json({
+      success: true,
+      message: 'Successfully mark chat as read!',
+      data: data,
+    })
+  } catch (err) {
+    console.log('Error', err)
+
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to mark chat as read!',
+      errors: err,
+    })
+  }
+}

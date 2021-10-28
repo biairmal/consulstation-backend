@@ -52,3 +52,20 @@ exports.getConversationsByChatRoomId = async (chatRoomId, userId, query) => {
     throw err
   }
 }
+
+exports.markChatAsReadByChatRoomId = async (chatRoomId, userId) => {
+  try {
+    const room = await ChatRoom.findOne({ _id: chatRoomId })
+
+    if (!room) return null
+
+    const result = await ChatMessage.markMessagesAsRead(
+      chatRoomId,
+      userId
+    )
+
+    return result
+  } catch (err) {
+    throw err
+  }
+}

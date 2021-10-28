@@ -15,5 +15,10 @@ router.get(
   verifyToken,
   chatController.getConversationsByChatRoomId
 )
+router.patch(
+  '/chat/:chatRoomId/mark-as-read',
+  verifyToken,
+  chatController.markAsReadByChatRoomId
+)
 
 module.exports = router
