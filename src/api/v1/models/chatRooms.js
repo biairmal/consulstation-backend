@@ -1,13 +1,14 @@
 const mongoose = require('mongoose')
+const { Schema } = mongoose
 
 const chatRoomSchema = new mongoose.Schema(
   {
     userId: {
-      type: String,
+      type: Schema.Types.ObjectId,
       required: [true, 'UserId can not be blank'],
     },
     consultantId: {
-      type: String,
+      type: Schema.Types.ObjectId,
       required: [true, 'consultantId can not be blank'],
     },
     isPaid: {

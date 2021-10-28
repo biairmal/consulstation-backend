@@ -13,7 +13,6 @@ exports.createChatRoom = async (userId, consultantId) => {
 }
 
 exports.postMessage = async (chatRoomId, sender, message) => {
-  console.log(chatRoomId)
   try {
     const result = await ChatMessage.postMessageInChatRoom(
       chatRoomId,

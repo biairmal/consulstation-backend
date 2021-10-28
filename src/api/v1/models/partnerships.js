@@ -53,8 +53,12 @@ const partnershipSchema = new mongoose.Schema(
       required: [true, 'Starting year can not be blank'],
     },
     profilePicture: {
-      type: String,
-      required: [true, 'Profile picture can not be blank'],
+      filename: {
+        type: String,
+      },
+      url: {
+        type: String,
+      },
     },
     createdBy: {
       type: Schema.Types.ObjectId,

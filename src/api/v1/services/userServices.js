@@ -9,7 +9,7 @@ exports.getUsers = () => {
 
 exports.getUserById = async (id) => {
   try {
-    const user = await User.findOne({ _id: id })
+    const user = await User.findOne({ _id: id }, queryConfig)
 
     if (!user) return null
     return user

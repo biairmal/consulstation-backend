@@ -47,6 +47,8 @@ exports.postMessage = async (req, res) => {
 
     const data = await chatServices.postMessage(chatRoomId, userId, message)
 
+    if(!data) return res.sendStatus(403)
+
     return res.status(201).json({
       success: true,
       message: 'Successfully post message!',
