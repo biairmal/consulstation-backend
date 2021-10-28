@@ -76,7 +76,7 @@ chatMessageSchema.statics.postMessageInChatRoom = async function (
           as: 'sender',
         },
       },
-      // { $unwind: '$sender' },
+      { $unwind: '$sender' },
       //   // do a jon on another table called chatrooms
       //   // get chatroom whose _id = chatroomId
       //   {
