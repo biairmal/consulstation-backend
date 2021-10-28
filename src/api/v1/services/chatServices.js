@@ -30,3 +30,25 @@ exports.postMessage = async (chatRoomId, sender, message) => {
     throw err
   }
 }
+
+exports.getConversationsByChatRoomId = async (chatRoomId, userId, query) => {
+  try {
+    const chatRoom = await ChatRoom.findOne({ _id: chatRoomId })
+    if (!chatRoom) return null
+
+    const options = {
+      page: parseInt(query.page) || 0,
+      limit: parseInt(query.limit) || 20,
+    }
+
+    const conversations = await ChatMessage.getConversationsByChatRoomId(
+      chatRoomId,
+      userId,
+      options
+    )
+
+    return conversations
+  } catch (err) {
+    throw err
+  }
+}

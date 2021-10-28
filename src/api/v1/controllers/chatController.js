@@ -47,7 +47,7 @@ exports.postMessage = async (req, res) => {
 
     const data = await chatServices.postMessage(chatRoomId, userId, message)
 
-    if(!data) return res.sendStatus(403)
+    if (!data) return res.sendStatus(403)
 
     return res.status(201).json({
       success: true,
@@ -63,6 +63,40 @@ exports.postMessage = async (req, res) => {
       success: false,
       message: 'Failed to post message!',
       errors: errorMessage,
+    })
+  }
+}
+
+exports.getConversationsByChatRoomId = async (req, res) => {
+  const userId = req.user.id
+  const { chatRoomId } = req.params
+  const query = req.query
+  try {
+    if (!chatRoomId)
+      return res.send(400).json({
+        success: false,
+        message: 'Failed to get conversations!',
+        errors: 'RoomId params is missing',
+      })
+
+    const data = await chatServices.getConversationsByChatRoomId(
+      chatRoomId,
+      userId,
+      query
+    )
+
+    return res.status(200).json({
+      success: true,
+      message: 'Successfully retreived conversations!',
+      data: data,
+    })
+  } catch (err) {
+    console.log('Error', err)
+
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to get conversations!',
+      errors: err,
     })
   }
 }

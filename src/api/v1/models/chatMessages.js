@@ -17,7 +17,10 @@ const MESSAGE_TYPE = {
 
 const chatMessageSchema = new mongoose.Schema(
   {
-    chatRoomId: String,
+    chatRoomId: {
+      type: Schema.Types.ObjectId,
+      required: [true, 'Chat room id can not be blank'],
+    },
     message: {
       type: Schema.Types.Mixed,
       required: [true, 'Message can not be blank'],
@@ -45,14 +48,11 @@ chatMessageSchema.statics.postMessageInChatRoom = async function (
   message
 ) {
   try {
-    console.log('chatroom: ', chatRoomId)
-    console.log('sender: ', sender)
-    console.log('message: ', message)
     const { userId, consultantId } = await ChatRoom.findOne({ _id: chatRoomId })
     // check if sender is in chat room
     if (userId.equals(sender) && consultantId.equals(sender)) return null
     // set who is receiving the message
-    const receiver = sender === userId ? consultantId : userId
+    const receiver = userId.equals(sender) ? consultantId : userId
 
     const newMessage = await this.create({
       chatRoomId: chatRoomId,
@@ -62,65 +62,121 @@ chatMessageSchema.statics.postMessageInChatRoom = async function (
       readByRecipients: { readByUserId: sender },
     })
 
-    const senderCollectionsName = userId.equals(sender) ? 'users' : 'consultants'
+    const usersCollectionsName = userId.equals(sender)
+      ? { sender: 'users', receiver: 'consultants' }
+      : { sender: 'consultants', receiver: 'users' }
+
     const aggregate = await this.aggregate([
-      //   // get post where _id = message._id
+      // get message by id
       { $match: { _id: newMessage._id } },
-      //   // do a join on another table called users
-      //   // get user whose _id = sender
+
+      // join users info
       {
         $lookup: {
-          from: senderCollectionsName,
+          from: usersCollectionsName.sender,
           localField: 'sender',
           foreignField: '_id',
           as: 'sender',
+          pipeline: [
+            {
+              $project: {
+                password: 0,
+              },
+            },
+          ],
         },
       },
       { $unwind: '$sender' },
-      //   // do a jon on another table called chatrooms
-      //   // get chatroom whose _id = chatroomId
-      //   {
-      //     $lookup: {
-      //       from: 'chatrooms',
-      //       localField: 'chatRoomId',
-      //       foreignField: '_id',
-      //       as: 'ChatRoomInfo',
-      //     },
-      //   },
-      //   { $unwind: '$chatRoomInfo' },
-      //   { $unwind: '$chatRoomInfo.userIds' },
-      //   // do a join on another table called users
-      //   // get user whose _id = userIds
-      //   {
-      //     $lookup: {
-      //       from: 'users',
-      //       localField: 'chatRoomInfo.userIds',
-      //       foreignField: '_id',
-      //       as: 'chatRoomInfo.userProfile',
-      //     },
-      //   },
-      //   { $unwind: '$chatRoomInfo.userProfile' },
 
-      //   // group data
-      //   {
-      //     $group: {
-      //       _id: '$chatRoomInfo._id',
-      //       messageId: { $last: '$_id' },
-      //       chatRoomId: { $last: '$chatRoomInfo._id' },
-      //       message: { $last: '$message' },
-      //       sender: { $last: '$sender' },
-      //       receiver: { $last: '$receiver' },
-      //       readByRecipients: { $last: '$readByRecipients' },
-      //       chatRoomInfo: { $addToSet: '$chatRoomInfo.userProfile' },
-      //       createdAt: { $last: '$createdAt' },
-      //       updatedAt: { $last: '$updatedAt' },
-      //     },
-      //   },
+      // join chatroom info
+      {
+        $lookup: {
+          from: 'chatrooms',
+          localField: 'chatRoomId',
+          foreignField: '_id',
+          as: 'chatRoomInfo',
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                userId: 1,
+                consultantId: 1,
+                createdAt: 1,
+              },
+            },
+          ],
+        },
+      },
+      { $unwind: '$chatRoomInfo' },
+
+      // join receiver info
+      {
+        $lookup: {
+          from: usersCollectionsName.receiver,
+          localField: 'receiver',
+          foreignField: '_id',
+          as: 'receiver',
+          pipeline: [
+            {
+              $project: {
+                password: 0,
+                npwp: 0,
+                cv: 0,
+                totalIncome: 0,
+                uncollectedIncome: 0,
+                contracts: 0,
+              },
+            },
+          ],
+        },
+      },
+      { $unwind: '$receiver' },
     ])
     return aggregate[0]
   } catch (err) {
     throw err
   }
 }
+
+chatMessageSchema.statics.getConversationsByChatRoomId = async function (
+  chatRoomId,
+  user,
+  options
+) {
+  chatRoomId = mongoose.Types.ObjectId(chatRoomId)
+  const { userId, consultantId } = await ChatRoom.findOne({ _id: chatRoomId })
+  // check if this chatroom belongs to this user
+  if (userId.equals(user) && consultantId.equals(user)) return null
+
+  try {
+    return this.aggregate([
+      // get message by chatroomId
+      { $match: { chatRoomId: chatRoomId } },
+      { $sort: { createdAt: -1 } },
+
+      // join sender and receiver
+      // {
+      //   $lookup: {
+      //     from: 'users',
+      //     let: { sender: '$sender' },
+      //     as: 'sender_test',
+      //     pipeline: [{ $match: { $expr: { $eq: [userId, '$$sender'] } } }],
+      //   },
+      // },
+
+      // apply pagination
+      { $skip: options.page * options.limit },
+      { $limit: options.limit },
+      { $sort: { createdAt: 1 } },
+    ])
+  } catch (err) {
+    throw err
+  }
+}
+
+chatMessageSchema.statics.markMessageAsRead = async function (
+  chatRoomId,
+  currentUserOnlineId
+) {}
 
 module.exports = mongoose.model('ChatMessage', chatMessageSchema)

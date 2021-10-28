@@ -10,5 +10,10 @@ router.post(
   verifyToken,
   chatController.postMessage
 )
+router.get(
+  '/chat/:chatRoomId',
+  verifyToken,
+  chatController.getConversationsByChatRoomId
+)
 
 module.exports = router
