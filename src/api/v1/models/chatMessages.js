@@ -382,8 +382,6 @@ chatMessageSchema.statics.getConversationsByChatRoomId = async function (
       { $unwind: '$chatRoomInfo' },
     ])
 
-    console.log(messagesByConsultant)
-
     let messages = messagesByUser.concat(messagesByConsultant)
     messages = messages.sort(function (x, y) {
       return y.createdAt - x.createdAt
