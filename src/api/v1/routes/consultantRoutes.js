@@ -26,7 +26,7 @@ router.patch(
 router.post(
   '/consultant/avatar',
   verifyToken,
-  upload.single('profilePicture'),
+  upload.single('profilePicture', { public_id: 'consultant_avatar' }),
   consultantController.updateAvatar
 )
 router.delete(

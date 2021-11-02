@@ -20,5 +20,6 @@ router.patch(
   verifyToken,
   chatController.markAsReadByChatRoomId
 )
+router.get('/chatrooms', verifyToken, chatController.getChatRooms)
 
 module.exports = router

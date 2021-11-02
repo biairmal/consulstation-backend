@@ -59,12 +59,17 @@ exports.markChatAsReadByChatRoomId = async (chatRoomId, userId) => {
 
     if (!room) return null
 
-    const result = await ChatMessage.markMessagesAsRead(
-      chatRoomId,
-      userId
-    )
+    const result = await ChatMessage.markMessagesAsRead(chatRoomId, userId)
 
     return result
+  } catch (err) {
+    throw err
+  }
+}
+
+exports.getChatRooms = async (user) => {
+  try {
+    return await ChatRoom.getChatRoomsByUser(user)
   } catch (err) {
     throw err
   }

@@ -15,7 +15,7 @@ router.get(
 router.post(
   '/partnership',
   verifyToken,
-  upload.single('cv'),
+  upload.single('cv', { public_id: 'curriculum_vitae' }),
   partnershipController.createPartnershipRequests
 )
 
