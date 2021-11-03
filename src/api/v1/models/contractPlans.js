@@ -18,6 +18,7 @@ const contractPlanSchema = new mongoose.Schema({
   },
   consultantId: {
     type: Schema.Types.ObjectId,
+    required: [true, 'consultantId can not be blank'],
     ref: 'Consultant',
   },
 })
