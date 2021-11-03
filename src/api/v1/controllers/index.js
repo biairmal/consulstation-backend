@@ -1,6 +1,7 @@
 exports.articleController = require('./articleController')
 exports.authController = require('./authController')
 exports.chatController = require('./chatController')
+exports.contractPlanController = require('./contractPlanController')
 exports.consultantController = require('./consultantController')
 exports.partnershipController = require('./partnershipController')
 exports.userController = require('./userController')

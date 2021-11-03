@@ -16,7 +16,10 @@ exports.getConsultants = () => {
 
 exports.getConsultantById = async (id) => {
   try {
-    const consultant = await Consultant.findOne({ _id: id }, { password: 0 })
+    const consultant = await Consultant.findOne(
+      { _id: id },
+      { password: 0 }
+    ).populate('contracts')
 
     if (!consultant) return null
     return consultant

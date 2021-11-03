@@ -132,3 +132,32 @@ exports.markAsReadByChatRoomId = async (req, res) => {
     })
   }
 }
+
+exports.getChatRooms = async (req, res) => {
+  const user = req.user
+  try {
+    const data = await chatServices.getChatRooms(user)
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: 'Failed to get chatrooms!',
+        errors: 'Invalid user',
+      })
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Successfully retreived chatrooms for this user!',
+      data: data,
+    })
+  } catch (err) {
+    console.log('Error', err)
+
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to get chatrooms!',
+      errors: err,
+    })
+  }
+}

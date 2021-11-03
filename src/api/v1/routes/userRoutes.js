@@ -14,7 +14,7 @@ router.post('/user/profile/update', verifyToken, userController.updateProfile)
 router.post(
   '/user/avatar',
   verifyToken,
-  upload.single('profilePicture'),
+  upload.single('profilePicture', { public_id: 'user_avatar' }),
   userController.updateAvatar
 )
 router.delete('/user/avatar', verifyToken, userController.deleteAvatar)

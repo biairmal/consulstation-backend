@@ -8,9 +8,8 @@ module.exports = (err) => {
 
     return errorObj
   }
-
   // handling validation errors
-  if (err._message === 'User validation failed') {
+  if (err._message.includes('validation failed')) {
     Object.keys(err.errors).forEach((key) => {
       errorObj[key] = err.errors[key].message
     })
