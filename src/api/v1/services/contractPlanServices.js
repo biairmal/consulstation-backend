@@ -54,7 +54,7 @@ exports.deleteContractPlanById = async (contractPlanId, consultantId) => {
       { _id: consultantId },
       {
         $pull: {
-          contracts: { _id: contractPlanId },
+          contracts: contractPlanId ,
         },
       }
     )

@@ -1,8 +1,10 @@
 const { consultantServices } = require('../services')
 
 exports.getConsultants = async (req, res) => {
+  const limit = parseInt(req.query.limit) || 12
+  const page = parseInt(req.query.page) || 0
   try {
-    const data = await consultantServices.getConsultants()
+    const data = await consultantServices.getConsultants(limit, page)
 
     return res.status(200).json({
       success: true,
@@ -147,4 +149,3 @@ exports.deleteAvatar = async (req, res) => {
     })
   }
 }
-

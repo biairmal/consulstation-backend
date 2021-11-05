@@ -5,6 +5,7 @@ const userRoutes = require('./userRoutes')
 const contractPlanRoutes = require('./contractPlanRoutes')
 const consultantRoutes = require('./consultantRoutes')
 const partnershipRoutes = require('./partnershipRoutes')
+const transactionRoutes = require('./transactionRoutes')
 
 module.exports = [
   articleRoutes,
@@ -14,4 +15,5 @@ module.exports = [
   userRoutes,
   consultantRoutes,
   partnershipRoutes,
+  transactionRoutes,
 ]

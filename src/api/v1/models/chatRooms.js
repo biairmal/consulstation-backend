@@ -15,11 +15,10 @@ const chatRoomSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    expired: {
+    expiredAt: {
       type: Date,
       default: null,
     },
-    lastMessageSent: Date,
   },
   { timestamps: true }
 )

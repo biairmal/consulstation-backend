@@ -9,7 +9,7 @@ const transactionSchema = new mongoose.Schema(
     },
     paymentStatus: {
       type: String,
-      enum: ['NOT_PAID_YET', 'PAID', 'EXPIRED'],
+      enum: ['NOT_PAID_YET', 'PAID', 'PENDING', 'FAILED'],
       default: 'NOT_PAID_YET',
     },
     price: {

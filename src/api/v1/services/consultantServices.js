@@ -10,8 +10,12 @@ const queryConfig = {
   phone: 0,
 }
 
-exports.getConsultants = () => {
-  return Consultant.find({}, queryConfig)
+exports.getConsultants = (limit, page) => {
+  const skip = limit * page
+  return Consultant.find({}, queryConfig, {
+    limit: limit,
+    skip: skip,
+  })
 }
 
 exports.getConsultantById = async (id) => {
