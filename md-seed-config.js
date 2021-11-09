@@ -8,8 +8,8 @@ const Admins = require('./src/api/v1/seeders/admins.seeder')
 const Consultants = require('./src/api/v1/seeders/consultants.seeder')
 
 const mongoURL =
-  `mongodb://localhost:${process.env.DB_PORT}/${process.env.DB_NAME}` ||
-  'mongodb://localhost:27017/dbname'
+  process.env.DB_URI ||
+  `mongodb://localhost:${process.env.DB_PORT}/${process.env.DB_NAME}`
 
 /**
  * Seeders List
