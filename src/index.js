@@ -7,6 +7,7 @@ const cors = require('cors')
 const socketio = require('socket.io')()
 const WebSocket = require('./api/v1/utils/WebSocket')
 const http = require('http')
+const { allowCors } = require('./api/v1/helpers')
 
 const app = express()
 
@@ -22,8 +23,9 @@ const corsOptions = {
 }
 
 // Middlewares
-app.use(cors(corsOptions))
-app.options('*', cors())
+// app.use(cors(corsOptions))
+// app.options('*', cors())
+app.use(allowCors())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(cookieParser())
