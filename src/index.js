@@ -23,6 +23,7 @@ const corsOptions = {
 
 // Middlewares
 app.use(cors(corsOptions))
+app.options('*', cors())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(cookieParser())
@@ -35,7 +36,7 @@ routes.forEach((route) => app.use('/api', route))
 app.use('*', (req, res) => {
   return res.status(404).json({
     success: false,
-    message: 'Invalid API endpoint!'
+    message: 'Invalid API endpoint!',
   })
 })
 
