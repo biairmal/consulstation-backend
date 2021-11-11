@@ -57,48 +57,50 @@ exports.createTransaction = async (user, form) => {
 exports.notify = async (midtransNotification) => {
   try {
     // PUT LOGIC HERE AFTERE DEPLOYMENT
-    snap.transaction.notification(midtransNotification).then(async (statusResponse) => {
-      let { orderId, transactionStatus, fraudStatus } = statusResponse
-      console.log(
-        `Transaction notification received. Order ID: ${orderId}. Transaction status: ${transactionStatus}. Fraud status: ${fraudStatus}`
-      )
-      if (transactionStatus == 'capture') {
-        // capture only applies to card transaction, which you need to check for the fraudStatus
-        if (fraudStatus == 'challenge') {
-          // TODO set transaction status on your databaase to 'challenge'
-          return 'PAYMENT STATUS: CREDIT CARD CHALLENGED'
-
-        } else if (fraudStatus == 'accept') {
+    snap.transaction
+      .notification(midtransNotification)
+      .then(async (statusResponse) => {
+        let { orderId, transactionStatus, fraudStatus } = statusResponse
+        console.log('status response: ', statusResponse)
+        console.log(
+          `Transaction notification received. Order ID: ${orderId}. Transaction status: ${transactionStatus}. Fraud status: ${fraudStatus}`
+        )
+        if (transactionStatus == 'capture') {
+          // capture only applies to card transaction, which you need to check for the fraudStatus
+          if (fraudStatus == 'challenge') {
+            // TODO set transaction status on your databaase to 'challenge'
+            return 'PAYMENT STATUS: CREDIT CARD CHALLENGED'
+          } else if (fraudStatus == 'accept') {
+            // TODO set transaction status on your databaase to 'success'
+            await successPayment(orderId)
+            return 'PAYMENT STATUS: CREDIT CARD ACCEPTED'
+          }
+        } else if (transactionStatus == 'settlement') {
           // TODO set transaction status on your databaase to 'success'
           await successPayment(orderId)
-          return 'PAYMENT STATUS: CREDIT CARD ACCEPTED'
+          return 'PAYMENT STATUS : SETTLEMENT'
+        } else if (transactionStatus == 'deny') {
+          // TODO you can ignore 'deny', because most of the time it allows payment retries
+          // and later can become success
+        } else if (
+          transactionStatus == 'cancel' ||
+          transactionStatus == 'expire'
+        ) {
+          // TODO set transaction status on your databaase to 'failure'
+          await Transaction.findOneAndUpdate(
+            { _id: orderId },
+            { paymentStatus: 'FAILED' }
+          )
+          return 'PAYMENT STATUS: FAILED OR EXPIRED'
+        } else if (transactionStatus == 'pending') {
+          // TODO set transaction status on your databaase to 'pending' / waiting payment
+          await Transaction.findOneAndUpdate(
+            { _id: orderId },
+            { paymentStatus: 'PENDING' }
+          )
+          return 'PAYMENT STATUS: PENDING'
         }
-      } else if (transactionStatus == 'settlement') {
-        // TODO set transaction status on your databaase to 'success'
-        await successPayment(orderId)
-        return 'PAYMENT STATUS : SETTLEMENT'
-      } else if (transactionStatus == 'deny') {
-        // TODO you can ignore 'deny', because most of the time it allows payment retries
-        // and later can become success
-      } else if (
-        transactionStatus == 'cancel' ||
-        transactionStatus == 'expire'
-      ) {
-        // TODO set transaction status on your databaase to 'failure'
-        await Transaction.findOneAndUpdate(
-          { _id: orderId },
-          { paymentStatus: 'FAILED' }
-        )
-        return 'PAYMENT STATUS: FAILED OR EXPIRED'
-      } else if (transactionStatus == 'pending') {
-        // TODO set transaction status on your databaase to 'pending' / waiting payment
-        await Transaction.findOneAndUpdate(
-          { _id: orderId },
-          { paymentStatus: 'PENDING' }
-        )
-        return 'PAYMENT STATUS: PENDING'
-      }
-    })
+      })
   } catch (err) {
     throw err
   }
