@@ -54,10 +54,10 @@ exports.createTransaction = async (user, form) => {
   }
 }
 
-exports.notify = async () => {
+exports.notify = async (midtransNotification) => {
   try {
     // PUT LOGIC HERE AFTERE DEPLOYMENT
-    snap.transaction.notification(notificationJson).then(async (statusResponse) => {
+    snap.transaction.notification(midtransNotification).then(async (statusResponse) => {
       let { orderId, transactionStatus, fraudStatus } = statusResponse
       console.log(
         `Transaction notification received. Order ID: ${orderId}. Transaction status: ${transactionStatus}. Fraud status: ${fraudStatus}`
