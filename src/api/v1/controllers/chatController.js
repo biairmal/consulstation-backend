@@ -136,8 +136,6 @@ exports.markAsReadByChatRoomId = async (req, res) => {
 exports.getChatRooms = async (req, res) => {
   const user = req.user
   try {
-    const data = await chatServices.getChatRooms(user)
-
     if (!user) {
       return res.status(400).json({
         success: false,
@@ -145,6 +143,8 @@ exports.getChatRooms = async (req, res) => {
         errors: 'Invalid user',
       })
     }
+
+    const data = await chatServices.getChatRooms(user)
 
     return res.status(200).json({
       success: true,

@@ -59,11 +59,11 @@ chatRoomSchema.statics.getChatRoomsByUser = async function (user) {
     const queryConfig = {}
     if (user.role === 'user') {
       OTHER_USER_LOOKUP.collections = 'consultants'
-      OTHER_USER_LOOKUP.localField = 'consultantId'
+      OTHER_USER_LOOKUP.localField = '$consultantId'
       queryConfig.userId = userObjectId
     } else if (user.role === 'consultant') {
       OTHER_USER_LOOKUP.collections = 'users'
-      OTHER_USER_LOOKUP.localField = 'userId'
+      OTHER_USER_LOOKUP.localField = '$userId'
       queryConfig.consultantId = userObjectId
     }
     console.log(OTHER_USER_LOOKUP)
