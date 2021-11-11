@@ -60,42 +60,42 @@ exports.notify = async (midtransNotification) => {
     snap.transaction
       .notification(midtransNotification)
       .then(async (statusResponse) => {
-        let { orderId, transactionStatus, fraudStatus } = statusResponse
+        let { order_id, transaction_status, fraud_status } = statusResponse
         console.log('status response: ', statusResponse)
         console.log(
-          `Transaction notification received. Order ID: ${orderId}. Transaction status: ${transactionStatus}. Fraud status: ${fraudStatus}`
+          `Transaction notification received. Order ID: ${order_id}. Transaction status: ${transaction_status}. Fraud status: ${fraud_status}`
         )
-        if (transactionStatus == 'capture') {
-          // capture only applies to card transaction, which you need to check for the fraudStatus
-          if (fraudStatus == 'challenge') {
+        if (transaction_status == 'capture') {
+          // capture only applies to card transaction, which you need to check for the fraud_status
+          if (fraud_status == 'challenge') {
             // TODO set transaction status on your databaase to 'challenge'
             return 'PAYMENT STATUS: CREDIT CARD CHALLENGED'
-          } else if (fraudStatus == 'accept') {
+          } else if (fraud_status == 'accept') {
             // TODO set transaction status on your databaase to 'success'
-            await successPayment(orderId)
+            await successPayment(order_id)
             return 'PAYMENT STATUS: CREDIT CARD ACCEPTED'
           }
-        } else if (transactionStatus == 'settlement') {
+        } else if (transaction_status == 'settlement') {
           // TODO set transaction status on your databaase to 'success'
-          await successPayment(orderId)
+          await successPayment(order_id)
           return 'PAYMENT STATUS : SETTLEMENT'
-        } else if (transactionStatus == 'deny') {
+        } else if (transaction_status == 'deny') {
           // TODO you can ignore 'deny', because most of the time it allows payment retries
           // and later can become success
         } else if (
-          transactionStatus == 'cancel' ||
-          transactionStatus == 'expire'
+          transaction_status == 'cancel' ||
+          transaction_status == 'expire'
         ) {
           // TODO set transaction status on your databaase to 'failure'
           await Transaction.findOneAndUpdate(
-            { _id: orderId },
+            { _id: order_id },
             { paymentStatus: 'FAILED' }
           )
           return 'PAYMENT STATUS: FAILED OR EXPIRED'
-        } else if (transactionStatus == 'pending') {
+        } else if (transaction_status == 'pending') {
           // TODO set transaction status on your databaase to 'pending' / waiting payment
           await Transaction.findOneAndUpdate(
-            { _id: orderId },
+            { _id: order_id },
             { paymentStatus: 'PENDING' }
           )
           return 'PAYMENT STATUS: PENDING'
@@ -106,13 +106,13 @@ exports.notify = async (midtransNotification) => {
   }
 }
 
-const successPayment = async (orderId) => {
+const successPayment = async (order_id) => {
   try {
     const expiredAt = new Date()
     expiredAt.setDate(expiredAt.getDate() + 1)
 
     const { chatRoomId } = await Transaction.findOneAndUpdate(
-      { _id: orderId },
+      { _id: order_id },
       { paymentStatus: 'PAID' }
     )
     await ChatRoom.findOneAndUpdate(
