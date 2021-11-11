@@ -60,7 +60,7 @@ exports.login = async (req, res) => {
     const user = await authServices.login(username, password)
 
     if (!user) {
-      return res.status(400).json({
+      return res.status(200).json({
         success: false,
         message: 'Failed to login!',
         errors: 'Invalid credentials!',
@@ -112,7 +112,7 @@ exports.loginAdmin = async (req, res) => {
     const admin = await authServices.loginAdmin(username, password)
 
     if (!admin) {
-      return res.status(400).json({
+      return res.status(200).json({
         success: false,
         message: 'Failed to login!',
         errors: 'Invalid credentials!',
