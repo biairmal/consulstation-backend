@@ -129,7 +129,12 @@ chatRoomSchema.statics.getChatRoomsByUser = async function (user) {
           ],
         },
       },
-      { $unwind: '$unreadMessages' },
+      {
+        $unwind: {
+          path: '$unreadMessages',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
       { $set: { unreadMessages: '$unreadMessages.count' } },
     ])
   } catch (err) {
