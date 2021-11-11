@@ -83,10 +83,14 @@ chatMessageSchema.statics.postMessageInChatRoom = async function (
         {
           $lookup: {
             from: 'users',
-            localField: 'sender',
-            foreignField: '_id',
+            let: { sender: '$sender' },
             as: 'sender',
             pipeline: [
+              {
+                $match: {
+                  $expr: { $eq: ['$$sender', '$_id'] },
+                },
+              },
               {
                 $project: {
                   password: 0,
@@ -102,10 +106,14 @@ chatMessageSchema.statics.postMessageInChatRoom = async function (
         {
           $lookup: {
             from: 'consultants',
-            localField: 'receiver',
-            foreignField: '_id',
+            let: { receiver: '$receiver' },
             as: 'receiver',
             pipeline: [
+              {
+                $match: {
+                  $expr: { $eq: ['$$receiver', '$_id'] },
+                },
+              },
               {
                 $project: {
                   password: 0,
@@ -126,10 +134,14 @@ chatMessageSchema.statics.postMessageInChatRoom = async function (
         {
           $lookup: {
             from: 'chatrooms',
-            localField: 'chatRoomId',
-            foreignField: '_id',
+            let: { chatRoomId: '$chatRoomId' },
             as: 'chatRoomInfo',
             pipeline: [
+              {
+                $match: {
+                  $expr: { $eq: ['$$chatRoomId', '$_id'] },
+                },
+              },
               {
                 $project: {
                   _id: 1,
@@ -153,10 +165,14 @@ chatMessageSchema.statics.postMessageInChatRoom = async function (
         {
           $lookup: {
             from: 'consultants',
-            localField: 'sender',
-            foreignField: '_id',
+            let: { sender: '$sender' },
             as: 'sender',
             pipeline: [
+              {
+                $match: {
+                  $expr: { $eq: ['$$sender', '$_id'] },
+                },
+              },
               {
                 $project: {
                   password: 0,
@@ -177,10 +193,14 @@ chatMessageSchema.statics.postMessageInChatRoom = async function (
         {
           $lookup: {
             from: 'users',
-            localField: 'receiver',
-            foreignField: '_id',
+            let: { receiver: '$receiver' },
             as: 'receiver',
             pipeline: [
+              {
+                $match: {
+                  $expr: { $eq: ['$$receiver', '$_id'] },
+                },
+              },
               {
                 $project: {
                   password: 0,
@@ -196,10 +216,14 @@ chatMessageSchema.statics.postMessageInChatRoom = async function (
         {
           $lookup: {
             from: 'chatrooms',
-            localField: 'chatRoomId',
-            foreignField: '_id',
+            let: { chatRoomId: '$chatRoomId' },
             as: 'chatRoomInfo',
             pipeline: [
+              {
+                $match: {
+                  $expr: { $eq: ['$$chatRoomId', '$_id'] },
+                },
+              },
               {
                 $project: {
                   _id: 1,
@@ -246,10 +270,14 @@ chatMessageSchema.statics.getConversationsByChatRoomId = async function (
       {
         $lookup: {
           from: 'consultants',
-          localField: 'sender',
-          foreignField: '_id',
+          let: { sender: '$sender' },
           as: 'sender',
           pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ['$$sender', '$_id'] },
+              },
+            },
             {
               $project: {
                 password: 0,
@@ -270,10 +298,14 @@ chatMessageSchema.statics.getConversationsByChatRoomId = async function (
       {
         $lookup: {
           from: 'users',
-          localField: 'receiver',
-          foreignField: '_id',
+          let: { receiver: '$receiver' },
           as: 'receiver',
           pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ['$$receiver', '$_id'] },
+              },
+            },
             {
               $project: {
                 password: 0,
@@ -289,10 +321,14 @@ chatMessageSchema.statics.getConversationsByChatRoomId = async function (
       {
         $lookup: {
           from: 'chatrooms',
-          localField: 'chatRoomId',
-          foreignField: '_id',
+          let: { chatRoomId: '$chatRoomId' },
           as: 'chatRoomInfo',
           pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ['$$chatRoomId', '$_id'] },
+              },
+            },
             {
               $project: {
                 _id: 1,
@@ -321,10 +357,14 @@ chatMessageSchema.statics.getConversationsByChatRoomId = async function (
       {
         $lookup: {
           from: 'users',
-          localField: 'sender',
-          foreignField: '_id',
+          let: { sender: '$sender' },
           as: 'sender',
           pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ['$$sender', '$_id'] },
+              },
+            },
             {
               $project: {
                 password: 0,
@@ -340,10 +380,14 @@ chatMessageSchema.statics.getConversationsByChatRoomId = async function (
       {
         $lookup: {
           from: 'consultants',
-          localField: 'receiver',
-          foreignField: '_id',
+          let: { receiver: '$receiver' },
           as: 'receiver',
           pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ['$$receiver', '$_id'] },
+              },
+            },
             {
               $project: {
                 password: 0,
@@ -364,10 +408,14 @@ chatMessageSchema.statics.getConversationsByChatRoomId = async function (
       {
         $lookup: {
           from: 'chatrooms',
-          localField: 'chatRoomId',
-          foreignField: '_id',
+          let: { chatRoomId: '$chatRoomId' },
           as: 'chatRoomInfo',
           pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ['$$chatRoomId', '$_id'] },
+              },
+            },
             {
               $project: {
                 _id: 1,

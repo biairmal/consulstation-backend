@@ -73,10 +73,10 @@ chatRoomSchema.statics.getChatRoomsByUser = async function (user) {
       {
         $lookup: {
           from: OTHER_USER_LOOKUP.collections,
-          localField: OTHER_USER_LOOKUP.localField,
-          foreignField: '_id',
+          let: { localId: OTHER_USER_LOOKUP.localField },
           as: 'otherUser',
           pipeline: [
+            { $match: { $expr: { $eq: ['$$localId', '$_id'] } } },
             {
               $project: {
                 profilePicture: 1,
@@ -93,20 +93,23 @@ chatRoomSchema.statics.getChatRoomsByUser = async function (user) {
       {
         $lookup: {
           from: 'chatmessages',
-          localField: '_id',
-          foreignField: 'chatRoomId',
+          let: { localId: '$_id' },
           as: 'lastChat',
-          pipeline: [{ $sort: { createdAt: -1 } }, { $limit: 1 }],
+          pipeline: [
+            { $match: { $expr: { $eq: ['$$localId', '$chatRoomId'] } } },
+            { $sort: { createdAt: -1 } },
+            { $limit: 1 },
+          ],
         },
       },
       // coount unread messages
       {
         $lookup: {
           from: 'chatmessages',
-          localField: '_id',
-          foreignField: 'chatRoomId',
+          let: { localId: '$_id' },
           as: 'unreadMessages',
           pipeline: [
+            { $match: { $expr: { $eq: ['$$localId', '$chatRoomId'] } } },
             {
               $group: {
                 _id: '$chatRoomId',
