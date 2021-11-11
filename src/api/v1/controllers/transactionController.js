@@ -50,6 +50,7 @@ exports.createTransaction = async (req, res) => {
 exports.notify = async (req, res) => {
   try {
     const midtransNotification = req.body
+    console.log(midtransNotification)
 
     const data = await transactionServices.notify(midtransNotification)
 
