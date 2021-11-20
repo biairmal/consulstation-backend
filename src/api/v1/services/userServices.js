@@ -19,7 +19,7 @@ exports.getUserById = async (id) => {
     }
 
     const requestPartnership = await Partnership.findOne(
-      { email: 'briandglory@gmail.com' },
+      { email: user.email },
       queryConfig
     )
     if (requestPartnership) {
@@ -31,7 +31,7 @@ exports.getUserById = async (id) => {
       }
     }
 
-    const mergeInfo = {...user._doc, ...additionalInfo}
+    const mergeInfo = { ...user._doc, ...additionalInfo }
 
     return mergeInfo
   } catch (err) {
