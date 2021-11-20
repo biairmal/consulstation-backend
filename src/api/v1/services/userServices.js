@@ -1,4 +1,4 @@
-const { User } = require('../models')
+const { User, Partnership } = require('../models')
 const { cloudinary } = require('../../../config/cloudinary')
 
 const queryConfig = { password: 0 }
@@ -12,7 +12,28 @@ exports.getUserById = async (id) => {
     const user = await User.findOne({ _id: id }, queryConfig)
 
     if (!user) return null
-    return user
+
+    let additionalInfo = {
+      role: 'user',
+      partnershipRequest: 'none',
+    }
+
+    const requestPartnership = await Partnership.findOne(
+      { email: 'briandglory@gmail.com' },
+      queryConfig
+    )
+    if (requestPartnership) {
+      if (requestPartnership.accepted) {
+        additionalInfo.role = 'consultant'
+        additionalInfo.partnershipRequest = 'accepted'
+      } else {
+        additionalInfo.partnershipRequest = 'pending'
+      }
+    }
+
+    const mergeInfo = {...user._doc, ...additionalInfo}
+
+    return mergeInfo
   } catch (err) {
     throw err
   }

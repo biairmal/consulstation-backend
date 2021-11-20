@@ -23,8 +23,12 @@ exports.createArticle = async (req, res) => {
 }
 
 exports.getArticles = async (req, res) => {
+  const limit = parseInt(req.query.limit) || 12
+  const page = parseInt(req.query.page) || 0
+  const searchText = req.query.search || ''
+
   try {
-    const articles = await articleServices.getArticles()
+    const articles = await articleServices.getArticles(limit, page, searchText)
 
     return res.status(200).json({
       success: true,

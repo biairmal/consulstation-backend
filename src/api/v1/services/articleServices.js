@@ -14,8 +14,17 @@ exports.getArticleById = (id) => {
   return Article.findOne({ _id: id })
 }
 
-exports.getArticles = () => {
-  return Article.find({})
+exports.getArticles = (limit, page, searchText) => {
+  const skip = limit * page
+
+  return Article.find(
+    { title: { $regex: searchText, $options: 'i' } },
+    {},
+    {
+      limit: limit,
+      skip: skip,
+    }
+  )
 }
 
 exports.updateArticle = async (id, form) => {

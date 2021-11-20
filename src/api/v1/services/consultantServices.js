@@ -10,12 +10,22 @@ const queryConfig = {
   phone: 0,
 }
 
-exports.getConsultants = (limit, page) => {
+exports.getConsultants = (limit, page, searchText) => {
   const skip = limit * page
-  return Consultant.find({}, queryConfig, {
-    limit: limit,
-    skip: skip,
-  })
+
+  return Consultant.find(
+    {
+      $or: [
+        { firstName: { $regex: searchText, $options: 'i' } },
+        { lastName: { $regex: searchText, $options: 'i' } },
+      ],
+    },
+    queryConfig,
+    {
+      limit: limit,
+      skip: skip,
+    }
+  )
 }
 
 exports.getConsultantById = async (id) => {
