@@ -66,7 +66,7 @@ chatRoomSchema.statics.getChatRoomsByUser = async function (user) {
       OTHER_USER_LOOKUP.localField = '$userId'
       queryConfig.consultantId = userObjectId
     }
-    console.log(OTHER_USER_LOOKUP)
+
     return await this.aggregate([
       { $match: queryConfig },
       // join other user info

@@ -4,7 +4,9 @@ const dotenv = require('dotenv')
 const config = require('./config')
 const routes = require('./api/v1/routes')
 const cors = require('cors')
-const socketio = require('socket.io')()
+const socketio = require('socket.io')({
+  cors: { origin: process.env.CORS_ORIGIN },
+})
 const WebSocket = require('./api/v1/utils/WebSocket')
 const http = require('http')
 
@@ -27,6 +29,34 @@ app.options(cors())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(cookieParser())
+socketio.use((socket, next) => {
+  const username = socket.handshake.auth.username
+
+  if(!username) {
+    return next(new Error('Invalid username!'))
+  }
+
+  socket.username = username
+  next()
+})
+
+socketio.on("connection", (socket) => {
+  const users = [];
+  for (let [id, socket] of io.of("/").sockets) {
+    users.push({
+      userID: id,
+      username: socket.username,
+    });
+  }
+  socket.emit("users", users);
+  // ...
+  console.log(users)
+  // notify existing users
+  socket.broadcast.emit("user connected", {
+    userID: socket.id,
+    username: socket.username,
+  });
+});
 
 // Importing routes
 app.get('/api', (req, res) => {
@@ -45,7 +75,7 @@ const server = http.createServer(app)
 
 // Create socket connection
 global.io = socketio.listen(server)
-global.io.on('connection', WebSocket.connection)
+// global.io.on('connection', WebSocket.connection)
 
 // Database connection
 config.database(() => {
