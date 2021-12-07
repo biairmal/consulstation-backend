@@ -1,30 +1,29 @@
-const { Partnership, User, Consultant } = require('../models')
+const { Partnership, User, Consultant, Article } = require('../models')
 
 const queryConfig = { password: 0 }
 
-exports.getPartnerships = () => {
-  return Partnership.find({}, queryConfig)
-}
+exports.getDashboardData = async () => {
+  try {
+    const countPartnership = await Partnership.countDocuments({})
+    const totalUser = await User.countDocuments({})
+    const totalConsultant = await Consultant.countDocuments({})
+    const latestArticle = await Article.find(
+      {},{},
+      {
+        sort: { createdAt: 'descending' },
+        limit: 3,
+      }
+    )
 
-exports.createPartnership = async (userId, form, cv) => {
-  const userData = await User.findOne({ _id: userId })
+    const data = {
+      partnershipRequests: countPartnership,
+      totalUser: totalUser,
+      totalConsultant: totalConsultant,
+      latestArticle: latestArticle,
+    }
 
-  const partnership = new Partnership({
-    username: userData.username,
-    email: userData.email,
-    password: userData.password,
-    firstName: userData.firstName,
-    lastName: userData.lastName,
-    phone: userData.phone,
-    profilePicture: userData.profilePicture,
-    createdBy: userData._id,
-    npwp: form.npwp,
-    cv: {
-      filename: cv.filename,
-      url: cv.path,
-    },
-    startingYear: form.startingYear,
-  })
-
-  return partnership.save()
+    return data
+  } catch (err) {
+    throw err
+  }
 }
