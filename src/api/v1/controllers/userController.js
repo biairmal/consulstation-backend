@@ -4,7 +4,7 @@ exports.getUsers = async (req, res) => {
   const { role } = req.user
   try {
     if (role !== 'admin') return res.sendStatus(403)
-    
+
     const data = await userServices.getUsers()
 
     return res.status(200).json({
@@ -114,6 +114,47 @@ exports.deleteAvatar = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Failed to delete user avatar!',
+      error: err,
+    })
+  }
+}
+
+exports.changePassword = async (req, res) => {
+  const userId = req.user.id
+
+  try {
+    if (!req.body.oldPassword || !req.body.newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please fill all required fields! (oldPassword, newPassword)',
+      })
+    }
+
+    const result = await userServices.changePassword(userId, req.body)
+
+    if (!result) {
+      return res.status(401).json({
+        success: false,
+        message: 'User not found!',
+      })
+    }
+
+    if (result === 'Wrong Password!') {
+      return res.status(400).json({
+        success: false,
+        message: 'Wrong old password!',
+      })
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Successfully updated user password!',
+    })
+  } catch (err) {
+    console.log(err)
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to update password!',
       error: err,
     })
   }

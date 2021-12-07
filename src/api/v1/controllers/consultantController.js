@@ -5,7 +5,11 @@ exports.getConsultants = async (req, res) => {
   const page = parseInt(req.query.page) || 0
   const searchText = req.query.search || ''
   try {
-    const data = await consultantServices.getConsultants(limit, page, searchText)
+    const data = await consultantServices.getConsultants(
+      limit,
+      page,
+      searchText
+    )
 
     return res.status(200).json({
       success: true,
@@ -146,6 +150,55 @@ exports.deleteAvatar = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Failed to delete consultant avatar!',
+      error: err,
+    })
+  }
+}
+
+exports.changePassword = async (req, res) => {
+  const userId = req.user.id
+
+  try {
+    if (!req.body.oldPassword || !req.body.newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please fill all required fields! (oldPassword, newPassword)',
+      })
+    }
+
+    const newPasswordLength = req.body.newPassword.length
+    if (newPasswordLength < 6 || newPasswordLength > 24) {
+      return res.status(400).json({
+        success: false,
+        message: 'New password must be between 8-24 characters!'
+      })
+    }
+
+    const result = await consultantServices.changePassword(userId, req.body)
+
+    if (!result) {
+      return res.status(401).json({
+        success: false,
+        message: 'Consultant not found!',
+      })
+    }
+
+    if (result === 'Wrong Password!') {
+      return res.status(400).json({
+        success: false,
+        message: 'Wrong old password!',
+      })
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Successfully updated consultant password!',
+    })
+  } catch (err) {
+    console.log(err)
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to update password!',
       error: err,
     })
   }

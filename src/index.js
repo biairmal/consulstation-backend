@@ -1,14 +1,16 @@
 const express = require('express')
 const cookieParser = require('cookie-parser')
-const dotenv = require('dotenv')
-const config = require('./config')
-const routes = require('./api/v1/routes')
 const cors = require('cors')
-const socketio = require('socket.io')({
+const config = require('./config')
+const dotenv = require('dotenv')
+const http = require('http')
+const routes = require('./api/v1/routes')
+const { WebSocket } = require('./api/v1/utils')
+const { checkSocket } = require('./api/v1/middlewares')
+
+const io = require('socket.io')({
   cors: { origin: process.env.CORS_ORIGIN },
 })
-const WebSocket = require('./api/v1/utils/WebSocket')
-const http = require('http')
 
 const app = express()
 
@@ -29,34 +31,28 @@ app.options(cors())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(cookieParser())
-socketio.use((socket, next) => {
-  const username = socket.handshake.auth.username
+io.use((socket, next) => {
+  // creating persistent session id
+  const sessionID = socket.handhake.auth.sessionID
+  if (sessionID) {
+    //find existing session
+    const session = sessionStore.findSession(sessionID)
+    socket.userID = session.userID
+    socket.username = session.username
+    return next()
+  }
 
-  if(!username) {
+  // check if username exists
+  const username = socket.handshake.auth.username
+  if (!username) {
     return next(new Error('Invalid username!'))
   }
 
+  socket.sessionID = randomId()
+  socket.userID = randomId()
   socket.username = username
   next()
 })
-
-socketio.on("connection", (socket) => {
-  const users = [];
-  for (let [id, socket] of io.of("/").sockets) {
-    users.push({
-      userID: id,
-      username: socket.username,
-    });
-  }
-  socket.emit("users", users);
-  // ...
-  console.log(users)
-  // notify existing users
-  socket.broadcast.emit("user connected", {
-    userID: socket.id,
-    username: socket.username,
-  });
-});
 
 // Importing routes
 app.get('/api', (req, res) => {
@@ -74,8 +70,8 @@ app.use('*', (req, res) => {
 const server = http.createServer(app)
 
 // Create socket connection
-global.io = socketio.listen(server)
-// global.io.on('connection', WebSocket.connection)
+global.io = io.listen(server)
+global.io.on('connection', WebSocket.connection)
 
 // Database connection
 config.database(() => {

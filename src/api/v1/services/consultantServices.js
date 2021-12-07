@@ -1,5 +1,6 @@
 const { Consultant } = require('../models')
 const { cloudinary } = require('../../../config/cloudinary')
+const bcrypt = require('bcrypt')
 
 const queryConfig = {
   password: 0,
@@ -50,6 +51,28 @@ exports.updateConsultantById = async (id, data) => {
     if (!result.modifiedCount) throw 'Nothing was updated'
 
     return result
+  } catch (err) {
+    throw err
+  }
+}
+
+exports.changePassword = async (id, data) => {
+  try {
+    const consultant = await Consultant.findOne({ _id: id })
+
+    if (!consultant) return null
+    const validOldPassword = await bcrypt.compare(
+      data.oldPassword,
+      consultant.password
+    )
+
+    if (!validOldPassword) return 'Wrong Password!'
+    
+    const hashedNewPassword = await bcrypt.hash(data.newPassword, 12)
+
+    consultant.password = hashedNewPassword
+
+    return consultant.save()
   } catch (err) {
     throw err
   }

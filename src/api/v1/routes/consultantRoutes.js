@@ -18,10 +18,15 @@ router.get(
   '/consultant/:consultantId',
   consultantController.getPublicConsultantProfile
 )
-router.patch(
+router.post(
   '/consultant/profile/update',
   verifyToken,
   consultantController.updateProfile
+)
+router.post(
+  '/consultant/password/update',
+  verifyToken,
+  consultantController.changePassword
 )
 router.post(
   '/consultant/avatar',
