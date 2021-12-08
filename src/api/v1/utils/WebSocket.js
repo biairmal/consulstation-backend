@@ -1,11 +1,9 @@
 const sessionStore = require('./sessionStore')
 
 class WebSocket {
-  constructor() {
-    this.users = []
-  }
-
   connection(socket) {
+    const users = []
+    
     // create online users array
     for (let [id, socket] of io.of('/').sockets) {
       this.users.push({
@@ -52,7 +50,7 @@ class WebSocket {
       })
     })
 
-    socket.on('disconnet', async () => {
+    socket.on('disconnect', async () => {
       const matchingSockets = await global.io.in(socket.userID).allSockets()
       const isDisconnected = matchingSockets.size = 0
       if(isDisconnected) {
