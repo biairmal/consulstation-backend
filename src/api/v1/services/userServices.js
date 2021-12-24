@@ -68,10 +68,10 @@ exports.changePassword = async (id, data) => {
       user.password
     )
 
+    if (!validOldPassword) return 'Wrong Password!'
+    
     if (newPasswordIsTheSameAsBefore)
       throw 'Can not use the same password as before!'
-
-    if (!validOldPassword) return 'Wrong Password!'
 
     user.password = data.newPassword
 

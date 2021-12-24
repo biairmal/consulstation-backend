@@ -71,10 +71,10 @@ exports.changePassword = async (id, data) => {
       consultant.password
     )
 
+    if (!validOldPassword) return 'Wrong Password!'
+    
     if (newPasswordIsTheSameAsBefore)
     throw 'Can not use the same password as before!'
-
-    if (!validOldPassword) return 'Wrong Password!'
     
     const hashedNewPassword = await bcrypt.hash(data.newPassword, 12)
 
