@@ -66,6 +66,14 @@ exports.changePassword = async (id, data) => {
       consultant.password
     )
 
+    const newPasswordIsTheSameAsBefore = await bcrypt.compare(
+      data.newPassword,
+      consultant.password
+    )
+
+    if (newPasswordIsTheSameAsBefore)
+    throw 'Can not use the same password as before!'
+
     if (!validOldPassword) return 'Wrong Password!'
     
     const hashedNewPassword = await bcrypt.hash(data.newPassword, 12)

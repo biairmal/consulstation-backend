@@ -63,7 +63,16 @@ exports.changePassword = async (id, data) => {
       user.password
     )
 
+    const newPasswordIsTheSameAsBefore = await bcrypt.compare(
+      data.newPassword,
+      user.password
+    )
+
+    if (newPasswordIsTheSameAsBefore)
+      throw 'Can not use the same password as before!'
+
     if (!validOldPassword) return 'Wrong Password!'
+
     user.password = data.newPassword
 
     return user.save()
